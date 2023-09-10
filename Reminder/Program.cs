@@ -32,6 +32,8 @@ namespace Reminder
                     // Тест плагинной технологии
                     Customization tt = Common.CustomizationFarm.CreateNewCustomization(Common.CustomizationFarm.GetListCustomizationName()[0].Name);
                     Common.CustomizationFarm.SetCurrentCustomization(tt);
+                    Repository rep = RepositoryFarm.CreateNewRepository("RepositoryMsSql");
+
 
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);

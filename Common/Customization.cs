@@ -52,5 +52,25 @@ namespace Common
             }
         }
 
+        /// <summary>
+        /// Получение иконок для статуса базы данных
+        /// </summary>
+        /// <param name="Connected">Если статус базы данных доступна</param>
+        /// <returns>Возвращаем иконку</returns>
+        public virtual Bitmap GetIconDbStatus(bool Connected)
+        {
+            try
+            {
+                if (Connected) return Resource.REP_Online;
+                else return Resource.REP_Ofline;
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при получении рисунка для статуса базы данных: ({0})", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.GetIconDbStatus", this.GetType().FullName), EventEn.Error);
+                throw ae;
+            }
+        }
+
     }
 }

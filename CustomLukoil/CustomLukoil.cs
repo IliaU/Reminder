@@ -24,6 +24,7 @@ namespace CustomLukoil
         {
             try
             {
+                base.FStartText = @"Напоминалка для ЕЦМ ООО ""ЛУКОЙЛ-Технологии""";
 
                 //Log.EventSave("Плагин лугойла", "dd", EventEn.Message);
                 //this.EventSave("Плагин лугойла yfcktljdfyysq", "dd", EventEn.Message);
@@ -55,6 +56,26 @@ namespace CustomLukoil
             }
 
 
+        }
+
+        /// <summary>
+        /// Получение иконок для статуса базы данных
+        /// </summary>
+        /// <param name="Connected">Если статус базы данных доступна</param>
+        /// <returns>Возвращаем иконку</returns>
+        public override Bitmap GetIconDbStatus(bool Connected)
+        {
+            try
+            {
+                if (Connected) return Resource.REP_Online;
+                else return Resource.REP_Ofline;
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при получении рисунка для статуса базы данных: ({0})", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.GetIconDbStatus", this.GetType().FullName), EventEn.Error);
+                throw ae;
+            }
         }
 
     }

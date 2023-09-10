@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomLukoil", "CustomLukoil\CustomLukoil.csproj", "{CCBF401F-4F4E-4ECA-B06D-E5C9F6EDEF41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryMsSql", "RepositoryMsSql\RepositoryMsSql.csproj", "{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,26 @@ Global
 		{CCBF401F-4F4E-4ECA-B06D-E5C9F6EDEF41}.Release|x64.Build.0 = Release|Any CPU
 		{CCBF401F-4F4E-4ECA-B06D-E5C9F6EDEF41}.Release|x86.ActiveCfg = Release|Any CPU
 		{CCBF401F-4F4E-4ECA-B06D-E5C9F6EDEF41}.Release|x86.Build.0 = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|x64.Build.0 = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|ARM.Build.0 = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|ARM64.Build.0 = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|x64.ActiveCfg = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|x64.Build.0 = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

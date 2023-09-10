@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5434FEDE-A992-4218-803D-243A6F1F34A1}</ProjectGuid>
+    <ProjectGuid>{B2009A41-3AE3-4BC0-9939-2A928BF3EB59}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Common</RootNamespace>
-    <AssemblyName>Common</AssemblyName>
+    <RootNamespace>RepositoryMsSql</RootNamespace>
+    <AssemblyName>RepositoryMsSql</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -43,42 +43,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.cs" />
-    <Compile Include="Customization.cs" />
-    <Compile Include="CustomizationFarm.cs" />
-    <Compile Include="CustomizationPlg\CustomizationBase.cs" />
-    <Compile Include="CustomizationPlg\CustomizationI.cs" />
-    <Compile Include="EventEn.cs" />
-    <Compile Include="EventHashLock.cs" />
-    <Compile Include="EventLog.cs" />
-    <Compile Include="Log.cs" />
-    <Compile Include="PluginClassElement.cs" />
-    <Compile Include="ProgramStatus.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository.cs" />
-    <Compile Include="RepositoryFarm.cs" />
-    <Compile Include="RepositoryPlg\RepositoryBase.cs" />
-    <Compile Include="RepositoryPlg\RepositoryI.cs" />
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
+    <Compile Include="FSetupConnectDB.cs">
+      <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FSetupConnectDB.Designer.cs">
+      <DependentUpon>FSetupConnectDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RepositoryMsSql.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{5434fede-a992-4218-803d-243a6f1f34a1}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FSetupConnectDB.resx">
+      <DependentUpon>FSetupConnectDB.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resource\Icon-Message.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resource\REP-Ofline.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resource\REP-Online.jpg" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\Reminder\bin\Debug\RepositoryPlg</PostBuildEvent>
+  </PropertyGroup>
 </Project>

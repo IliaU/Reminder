@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Drawing;
+
 namespace Common.CustomizationPlg
 {
     /// <summary>
@@ -20,6 +22,11 @@ namespace Common.CustomizationPlg
         /// Возвращает версию плагина
         /// </summary>
         public string VersionPlg { get; private set; }
+
+        /// <summary>
+        /// Текст который будет писаться на самой первой форме в заголовке
+        /// </summary>
+        public string FStartText { get; protected set; }
 
         /// <summary>
         /// Конструктор
@@ -45,7 +52,6 @@ namespace Common.CustomizationPlg
                 Log.EventSave(ae.Message, string.Format("{0}.CustomizationBase", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
-
         }
 
         /// <summary>
@@ -66,7 +72,6 @@ namespace Common.CustomizationPlg
                 Log.EventSave(ae.Message, string.Format("{0}.EventSave", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
-
         }
     }
 }

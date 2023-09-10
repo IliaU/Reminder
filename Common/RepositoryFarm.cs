@@ -11,9 +11,9 @@ using System.IO;
 namespace Common
 {
     /// <summary>
-    /// Класс для работы с кастомизацияами для разных организаций
+    /// Класс для работы с репозиторием
     /// </summary>
-    public class CustomizationFarm
+    public class RepositoryFarm
     {
         /// <summary>
         /// Корневая директория нашего плагина
@@ -29,7 +29,7 @@ namespace Common
         /// </summary>
         public static string FolderForPlugin
         {
-            get { return "CustomizationPlg"; }
+            get { return "RepositoryPlg"; }
             private set { }
         }
 
@@ -38,76 +38,76 @@ namespace Common
         /// </summary>
         public static string PathForPlugin
         {
-            get { return string.Format("{0}\\CustomizationPlg", ParentDirectoryForPlugin); }
+            get { return string.Format("{0}\\RepositoryPlg", ParentDirectoryForPlugin); }
             private set { }
         }
 
         /// <summary>
-        /// Получаем список доступных кастомизаций
+        /// Получаем список доступных репозиториев
         /// </summary>
         /// <returns>Список имён доступных дисплеев</returns>
-        public static List<PluginClassElement> ListCustomizationName;
+        public static List<PluginClassElement> ListRepositoryName;
 
         /// <summary>
-        /// Текущая кастомизация
+        /// Текущий репозиторий
         /// </summary>
-        public static Customization CurCustomization;
+        public static Repository CurRepository;
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        public CustomizationFarm()
+        public RepositoryFarm()
         {
             try
             {
-                if (ListCustomizationName == null)
+                if (ListRepositoryName == null)
                 {
-                    Log.EventSave("Инициализация классов катомизации", GetType().Name, EventEn.Message);
-                    GetListCustomizationName();
+                    Log.EventSave("Инициализация классов репозитория", GetType().Name, EventEn.Message);
+                    GetListRepositoryName();
 
-                    // Установка текущей кастомизации по умолчанию
-                    //string dd = ListCustomizationName.Find(x => x == Config.CustomizationName);
-                    //if (!string.IsNullOrWhiteSpace(dd)) CurCustomization = CreateNewCustomization("DisplayDSP840");
+                    // Установка текущего репозитория по умолчанию
+                    //string dd = ListRepositoryName.Find(x => x == Config.RepositoryName);
+                    //if (!string.IsNullOrWhiteSpace(dd)) CurRepository = CreateNewRepository("DisplayDSP840");
                 }
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.CustomizationFarm", this.GetType().FullName), EventEn.Error);
+                Log.EventSave(ae.Message, string.Format("{0}.RepositoryFarm", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
 
         /// <summary>
-        /// Установка текущей кастомизации
+        /// Установка текущего репозитория
         /// </summary>
-        /// <param name="NewCst">Кастомизация которую нужно установить по умолчанию</param>
-        public static void SetCurrentCustomization(Customization NewCst)
+        /// <param name="NewRep">Репозиторий который установить по умолчанию</param>
+        public static void SetCurrentRepository(Repository NewRep)
         {
             try
             {
-                CurCustomization = NewCst;
+                CurRepository = NewRep;
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "CustomizationFarm.SetCurrentCustomization", EventEn.Error);
+                Log.EventSave(ae.Message, "CustomizationFarm.SetCurrentRepository", EventEn.Error);
                 throw ae;
             }
         }
 
         /// <summary>
-        /// Получаем список кастомизаций
+        /// Получаем список репозиториев
         /// </summary>
-        /// <returns>Список доступных кастомизаций</returns>
-        public static List<PluginClassElement> GetListCustomizationName()
+        /// <returns>Список доступных репозиториев</returns>
+        public static List<PluginClassElement> GetListRepositoryName()
         {
             try
             {
                 // Если список ещё не получали то получаем его
-                if (ListCustomizationName == null)
+                if (ListRepositoryName == null)
                 {
-                    ListCustomizationName = new List<PluginClassElement>();
+                    ListRepositoryName = new List<PluginClassElement>();
 
                     // Проверяем наличие папки и если её нет то создаём её
                     if (!Directory.Exists(PathForPlugin)) Directory.CreateDirectory(PathForPlugin);
@@ -126,7 +126,7 @@ namespace Common
 
                             foreach (Type i in item.GetInterfaces())
                             {
-                                string Search = "CustomizationPlg.CustomizationI";
+                                string Search = "RepositoryPlg.RepositoryI";
                                 if (i.FullName.Length > Search.Length && i.FullName.Substring(i.FullName.Length - Search.Length) == Search)
                                 {
                                     flagI = true;
@@ -139,7 +139,7 @@ namespace Common
                             bool flagB = false;
                             foreach (MemberInfo mi in item.GetMembers())
                             {
-                                string Search = "CustomizationPlg.CustomizationBase";
+                                string Search = "RepositoryPlg.RepositoryBase";
                                 if (mi.DeclaringType.FullName.Length > Search.Length && mi.DeclaringType.FullName.Substring(mi.DeclaringType.FullName.Length - Search.Length) == Search)
                                 {
                                     flagB = true;
@@ -149,7 +149,7 @@ namespace Common
                             if (!flagB) continue;
 
                             // Проверяем конструктор нашего класса  
-                            //bool flag5 = false;
+                            bool flag1 = false;
                             bool flag0 = false;
                             string nameConstructor;
                             foreach (ConstructorInfo ctor in item.GetConstructors())
@@ -159,60 +159,59 @@ namespace Common
                                 // получаем параметры конструктора  
                                 ParameterInfo[] parameters = ctor.GetParameters();
 
-                                /*
-                                // если в этом конструктаре 11 параметров то проверяем тип и имя параметра 
-                                if (parameters.Length == 5)
+                                
+                                // если в этом конструктаре должно быть несколько параметров
+                                if (parameters.Length == 1)
                                 {
-                                    bool flag5 = true;
-                                    if (parameters[0].ParameterType.Name != "Int32" || parameters[0].Name != "Port") flag = false;
-                                    if (parameters[1].ParameterType.Name != "Int32" || parameters[1].Name != "BaudRate") flag = false;
-                                    if (parameters[2].ParameterType.Name != "Parity" || parameters[2].Name != "Parity") flag = false;
-                                    if (parameters[3].ParameterType.Name != "Int32" || parameters[3].Name != "DataBits") flag = false;
-                                    if (parameters[4].ParameterType.Name != "StopBits" || parameters[4].Name != "StpBits") flag = false;
+                                    bool flag = true;
+                                    if (parameters[0].ParameterType.Name != "String" || parameters[0].Name != "ConnectionString") flag = false;
+
+                                    flag1 = flag;
                                 }
-                                */
+                                
 
                                 // Проверяем конструктор для создания документа пустого по умолчанию
                                 if (parameters.Length == 0) flag0 = true;
                             }
-                            //if (!flag5) continue;
+                            if (!flag1) continue;
                             if (!flag0) continue;
 
-                            ListCustomizationName.Add(new PluginClassElement(item.Name, item));
+                            ListRepositoryName.Add(new PluginClassElement(item.Name, item));
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "CustomizationFarm.GetListCustomizationName", EventEn.Error);
+                Log.EventSave(ex.Message, "RepositoryFarm.GetListRepositoryName", EventEn.Error);
             }
 
-            return ListCustomizationName;
+            return ListRepositoryName;
         }
 
         /// <summary>
-        /// Создание катомизации определённого типа с параметрами из конфига
+        /// Создание репозитория определённого типа с параметрами из конфига
         /// </summary>
-        /// <param name="PlugInType">Имя плагина определяющего тип кастомизации который создаём</param>
-        /// <returns>Возвращаем кастомизацию</returns>
-        public static Customization CreateNewCustomization(string PlugInType)
+        /// <param name="PlugInType">Имя плагина определяющего тип репозитория который создаём</param>
+        /// <param name="ConnectionString">Строка подключения к репозиторию</param>
+        /// <returns>Возвращаем репозиторий</returns>
+        public static Repository CreateNewRepository(string PlugInType, string ConnectionString)
         {
-            Customization rez = null;
+            Repository rez = null;
             try
             {
-                // Если списка кастомизаций ещё нет то создаём его
-                GetListCustomizationName();
+                // Если списка репозиториев ещё нет то создаём его
+                GetListRepositoryName();
 
 
                 // Проверяем наличие существование этого типа плагина
-                foreach (PluginClassElement item in ListCustomizationName)
+                foreach (PluginClassElement item in ListRepositoryName)
                 {
                     if (item.Name == PlugInType.Trim())
                     {
                         // Создаём экземпляр объекта
-                        //object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
-                        rez = (Customization)Activator.CreateInstance(item.EmptTyp);//, targ);
+                        object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
+                        rez = (Repository)Activator.CreateInstance(item.EmptTyp, targ);
 
                         // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
                         //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
@@ -225,10 +224,51 @@ namespace Common
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "CustomizationFarm.CreateNewCustomization", EventEn.Error);
+                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewRepository", EventEn.Error);
             }
 
             return rez;
         }
+
+        /// <summary>
+        /// Создание репозитория определённого типа с параметрами из конфига
+        /// </summary>
+        /// <param name="PlugInType">Имя плагина определяющего тип репозитория который создаём</param>
+        /// <returns>Возвращаем репозиторий</returns>
+        public static Repository CreateNewRepository(string PlugInType)
+        {
+            Repository rez = null;
+            try
+            {
+                // Если списка репозиториев ещё нет то создаём его
+                GetListRepositoryName();
+
+
+                // Проверяем наличие существование этого типа плагина
+                foreach (PluginClassElement item in ListRepositoryName)
+                {
+                    if (item.Name == PlugInType.Trim())
+                    {
+                        // Создаём экземпляр объекта
+                        //object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
+                        rez = (Repository)Activator.CreateInstance(item.EmptTyp);//, targ);
+
+                        // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
+                        //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
+
+                        break;
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewRepository", EventEn.Error);
+            }
+
+            return rez;
+        }
+
     }
 }

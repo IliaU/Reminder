@@ -64,6 +64,9 @@ namespace Reminder
             {
                 InitializeComponent();
                 this.DefBaskCoclortSSLabel = this.tSSLabel.BackColor;
+                this.Text = CustomizationFarm.CurCustomization.FStartText;
+                this.PicStatRepOnline.Image = CustomizationFarm.CurCustomization.GetIconDbStatus(true);
+                this.PicStatRepOfline.Image = CustomizationFarm.CurCustomization.GetIconDbStatus(false);
 
                 m_menu = new ContextMenu();
                 m_menu.MenuItems.Add(0, new MenuItem("Show", new System.EventHandler(Show_Click)));
@@ -306,7 +309,6 @@ namespace Reminder
             //  this.com.RefreshEvent = true;       // принудительно заставляем перечитать таблицу с результатами
             return;
         }
-
 
         /// <summary>
         /// Произошло событие системное правим текущий статус
@@ -589,5 +591,21 @@ namespace Reminder
             }
         }
 
+        // Пользователь решил настроить репозиторий
+        private void TsmItemConfigRepository_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (FRepositorySetup Frm = new FRepositorySetup())
+                {
+                    Frm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе TsmItemConfigRepository_Click:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.TsmItemConfigRepository_Click", this.GetType().FullName), EventEn.Error, true, true);
+            }
+        }
     }
 }

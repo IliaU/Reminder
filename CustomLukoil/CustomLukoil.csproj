@@ -66,6 +66,12 @@
   <ItemGroup>
     <None Include="Icon-Message.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="REP-Ofline.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="REP-Online.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\Reminder\bin\Debug\CustomizationPlg</PostBuildEvent>
