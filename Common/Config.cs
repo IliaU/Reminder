@@ -50,7 +50,12 @@ namespace Common
         /// <summary>
         /// Плагин кастомизации по умолчанию
         /// </summary>
-        private static string _DefCustPlg=string.Empty;
+        private static string _DefCustPlg = string.Empty;
+
+        /// <summary>
+        /// Количество секунд паузы в плагинах нашего приложения между проверками
+        /// </summary>
+        private static int _SecondPulRefreshStatus = 15;
         #endregion
 
         #region Public Param
@@ -116,24 +121,23 @@ namespace Common
             }
         }
 
-        /*
         /// <summary>
-        /// Порт дисплея покупателя
+        /// Количество секунд паузы в плагинах нашего приложения между проверками
         /// </summary>
-        public static int DisplayPort
+        public static int SecondPulRefreshStatus
         {
             get
             {
-                return _DisplayPort;
+                return _SecondPulRefreshStatus;
             }
             set
             {
-                xmlRoot.SetAttribute("DisplayPort", value.ToString());
+                xmlRoot.SetAttribute("SecondPulRefreshStatus", value.ToString());
                 Save();
-                _DisplayPort = value;
+                _SecondPulRefreshStatus = value;
             }
         }
-        */
+
         #endregion
 
         #region Puplic Method
@@ -160,7 +164,7 @@ namespace Common
                 GetDate();
 
                 // Подписываемся на события
-                //Com.Lic.onCreatedLicKey += new EventHandler<LicLib.onLicEventKey>(Lic_onCreatedLicKey);
+                RepositoryFarm.onEventSetup += RepositoryFarm_onEventSetup;
             }
             catch (Exception ex)
             {
@@ -285,11 +289,12 @@ namespace Common
                     xmlMain.SetAttribute("Version", _Version.ToString());
                     xmlMain.SetAttribute("Trace", _Trace.ToString());
                     xmlMain.SetAttribute("ShowNotification", _ShowNotification.ToString());
+                    xmlMain.SetAttribute("SecondPulRefreshStatus", _SecondPulRefreshStatus.ToString());
                     Document.AppendChild(xmlMain);
 
                     // Создаём список в который будем помещать элементы с кастомизацией
                     XmlElement xmlCustomizationPlg = Document.CreateElement("CustomizationPlg");
-                    xmlCustomizationPlg.SetAttribute("DefCustPlg", _DefCustPlg.ToString());
+                    xmlCustomizationPlg.SetAttribute("CustPlgName", _DefCustPlg.ToString());
                     xmlMain.AppendChild(xmlCustomizationPlg);
                     //XmlElement xmlCustomerTest = Document.CreateElement("Customer");
                     //xmlCustomerTest.SetAttribute("Login", "sysadmin");
@@ -328,11 +333,28 @@ namespace Common
                     if (Version > int.Parse(xmlRoot.GetAttribute("Version"))) UpdateVersionXml(xmlRoot, int.Parse(xmlRoot.GetAttribute("Version")));
 
                     // Получаем значения из заголовка
+                    string RepositPlugInType = null;
+                    string RepositConnectionString = null;
                     for (int i = 0; i < xmlRoot.Attributes.Count; i++)
                     {
                         if (xmlRoot.Attributes[i].Name == "Trace") try { _Trace = bool.Parse(xmlRoot.Attributes[i].Value.ToString()); } catch (Exception) { }
                         if (xmlRoot.Attributes[i].Name == "ShowNotification") try { _ShowNotification = bool.Parse(xmlRoot.Attributes[i].Value.ToString()); } catch (Exception) { }
+                        if (xmlRoot.Attributes[i].Name == "SecondPulRefreshStatus") try { _SecondPulRefreshStatus = int.Parse(xmlRoot.Attributes[i].Value.ToString()); } catch (Exception) { }
+                        if (xmlRoot.Attributes[i].Name == "RepositPlugInType") RepositPlugInType = xmlRoot.Attributes[i].Value.ToString();
+                        try { if (xmlRoot.Attributes[i].Name == "RepositConnectionString") RepositConnectionString = xmlRoot.Attributes[i].Value.ToString(); } //Com.Lic.DeCode(xmlRoot.Attributes[i].Value.ToString()); }
+                        catch (Exception) { }
+                        if (xmlRoot.Attributes[i].Name == "DefCustPlg") try { _DefCustPlg = xmlRoot.Attributes[i].Value.ToString(); } catch (Exception) { }
                     }
+
+                    // Подгружаем репозиторий
+                    if (!string.IsNullOrWhiteSpace(RepositPlugInType)) RepositoryFarm.SetCurrentRepository(RepositoryFarm.CreateNewRepository(RepositPlugInType, RepositConnectionString), false);
+
+                    // Устанавливаем кастомизацию
+                    if (string.IsNullOrWhiteSpace(_DefCustPlg) && CustomizationFarm.GetListCustomizationName().Count > 0) DefCustPlg = CustomizationFarm.GetListCustomizationName()[0].Name;
+                    Customization tt = null;
+                    try { tt = CustomizationFarm.CreateNewCustomization(DefCustPlg); } 
+                    catch (Exception) { tt = CustomizationFarm.CreateNewCustomization(Common.CustomizationFarm.GetListCustomizationName()[0].Name); }
+                    CustomizationFarm.SetCurrentCustomization(tt);
 
                     // Получаем список вложенных объектов
                     foreach (XmlElement iMain in xmlRoot.ChildNodes)
@@ -345,9 +367,10 @@ namespace Common
                                 // Получаем значения из заголовка
                                 for (int i = 0; i < iMain.Attributes.Count; i++)
                                 {
-                                    if (iMain.Attributes[i].Name == "DefCustPlg") try { _DefCustPlg = iMain.Attributes[i].Value.ToString(); } catch (Exception) { }
+                                    if (iMain.Attributes[i].Name == "CustPlgName") try { _DefCustPlg = iMain.Attributes[i].Value.ToString(); } catch (Exception) { }
 
                                 }
+
 
                                 // Получаем список вложенных объектов 
                                 foreach (XmlElement iMainItems in iMain.ChildNodes)
@@ -433,19 +456,16 @@ namespace Common
             }
         }
 
-        /*
-        // Событие изменения текщего провайдера
-        private void ProviderFarm_onEventSetup(object sender, EventProviderFarm e)
+        // Обработка события изменения репозитория
+        private void RepositoryFarm_onEventSetup(object sender, EventRepositoryFarm e)
         {
             try
             {
                 XmlElement root = Document.DocumentElement;
 
-                root.SetAttribute("PrvFullName", e.Uprv.PrvInType);
-                try { root.SetAttribute("ConnectionString", Com.Lic.InCode(e.Uprv.ConnectionString)); }
+                root.SetAttribute("RepositPlugInType", e.Rep.PlugInType);
+                try { root.SetAttribute("RepositConnectionString", e.Rep.ConnectionString /* Com.Lic.InCode(e.Urep.ConnectionString)*/); }
                 catch (Exception) { }
-
-
 
                 // Получаем список объектов
                 //foreach (XmlElement item in root.ChildNodes)
@@ -457,11 +477,10 @@ namespace Common
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException("Упали при изменении файла конфигурации с ошибкой: " + ex.Message);
-                Log.EventSave(ae.Message, obj.GetType().Name + ".ProviderFarm_onEventSetup()", EventEn.Error);
+                Log.EventSave(ae.Message, obj.GetType().Name + ".RepositoryFarm_onEventSetup()", EventEn.Error);
                 throw ae;
             }
         }
-        */
 
         #endregion
     }

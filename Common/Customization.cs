@@ -15,6 +15,11 @@ namespace Common
     public class Customization : CustomizationPlg.CustomizationBase, CustomizationPlg.CustomizationI
     {
         /// <summary>
+        /// Храним последнее состояние значка и его значение по умолчанию
+        /// </summary>
+        private static Icon CurIcon = Resource.Icon_S;
+
+        /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="PlugInType">Тип палгина - this.GetType().FullName || Assembly.GetExecutingAssembly().FullName</param>
@@ -38,16 +43,38 @@ namespace Common
         /// </summary>
         /// <param name="evn">Событие к которому нужно получить иконку</param>
         /// <returns>Возвращаем иконку</returns>
-        public virtual Icon GetIconStatus(EventEn evn) 
-        {
+        public virtual Icon GetIconStatus(EventEn evn)
+        { 
             try
             {
-                return Resource.Icon_Message;
+                switch (evn)
+                {
+                    case EventEn.Success:
+                        CurIcon = Resource.Icon_S;
+                        break;
+                    case EventEn.Warning:
+                        CurIcon = Resource.Icon_W;
+                        break;
+                    case EventEn.Error:
+                        CurIcon = Resource.Icon_E;
+                        break;
+                    case EventEn.FatalError:
+                        CurIcon = Resource.Icon_FE;
+                        break;
+                    case EventEn.Message:
+                    case EventEn.Empty:
+                    case EventEn.Dump:
+                    case EventEn.Trace:
+                    default:
+                        break;
+                }
+
+                return CurIcon;
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при получении иконки с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.GetIconStatus", this.GetType().FullName), EventEn.Error);
+                this.EventSave(ae.Message, string.Format("{0}.GetIconStatus", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }

@@ -14,6 +14,11 @@ namespace Common
     public class PluginClassElement
     {
         /// <summary>
+        /// Информация по файлу dll
+        /// </summary>
+        public PluginClassElementList FileInfo;
+
+        /// <summary>
         /// Имя плагина
         /// </summary>
         public string Name { get; private set; }
@@ -28,12 +33,14 @@ namespace Common
         /// </summary>
         /// <param name="Name">Имя плагина</param>
         /// <param name="EmptTyp">Ссылка на длагин</param>
-        public PluginClassElement(string Name, Type EmptTyp)
+        /// <param name="FileInfo">Информация по файлу dll</param>
+        public PluginClassElement(string Name, Type EmptTyp, PluginClassElementList FileInfo)
         {
             try
             {
                 this.Name = Name;
                 this.EmptTyp = EmptTyp;
+                this.FileInfo = FileInfo;
             }
             catch (Exception ex)
             {

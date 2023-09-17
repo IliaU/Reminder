@@ -82,7 +82,8 @@ namespace Reminder
                 m_notifyicon.DoubleClick += new EventHandler(DoubleClickIcon);
 
                 // Подписываемся на события 
-                Log.onEventLog += Log_onEventLog;
+                Log.onEventLog += Log_onEventLog;                                           // Лог программы то что пишем в лог
+                ProgramStatus.onEventChangeStatus += ProgramStatus_onEventChangeStatus;     // Изменение статуса системы для того чтобы поменять иконку в трее и в формах
 
                 // Сообщаем о успешной загрузке приложения и меняем иконки
                 Log.EventSave("Программа загружена", this.GetType().FullName, EventEn.Message, true, false);
@@ -93,6 +94,16 @@ namespace Reminder
                 Log.EventSave(ae.Message, string.Format("{0}.FStart", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
+        }
+
+        /// <summary>
+        /// Подписываемся на изменение иконок в форме
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ProgramStatus_onEventChangeStatus(object sender, EventChangeStatus e)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -337,11 +348,70 @@ namespace Reminder
                 {
                     lock (this.LockObj)
                     {
+                        bool HashConnectRep = (RepositoryFarm.CurRepository == null ? false:RepositoryFarm.CurRepository.HashConnect);
+                        if (HashConnectRep)
+                        {
+                            this.PicStatRepOnline.Visible = true;
+                            this.PicStatRepOfline.Visible = false;
+                        }
+                        else
+                        {
+                            this.PicStatRepOnline.Visible = false;
+                            this.PicStatRepOfline.Visible = true;
+                        }
 
-                        /*
-                         // Если нет фатальной ошибки то нужно обработать результат
-                            if (e.Evn != Lib.EventEn.FatalError || e.Tab != null)
+                        if (e == null)
+                        {
+                            if (!HashConnectRep)
                             {
+                                this.tSSLabel.BackColor = Color.Khaki;
+                                this.tSSLabel.Text = "Подключения к репозиторию не установлено.";
+                            }
+                            else
+                            {
+                                this.tSSLabel.Text = string.Format("Подключение с базой данных версии {0} ({1}) установлено.", RepositoryFarm.CurRepository.VersionDB, RepositoryFarm.CurRepository.PlugInType);
+                            }
+                        }
+
+
+                        // Для сообщения
+                        string AggMessage = "";
+
+                        if (e != null)
+                        {
+                            if (e.Message.Length < 200) AggMessage = e.Message;
+                            else
+                            {
+                                AggMessage = e.Message.Substring(0, 200);
+                            }
+
+                            switch (e.Evn)
+                            {
+                                case EventEn.Empty:
+                                case EventEn.Dump:
+                                    break;
+                                case EventEn.Warning:
+                                    this.tSSLabel.BackColor = Color.Khaki;
+                                    this.tSSLabel.Text = e.Message;
+                                    break;
+                                case EventEn.Error:
+                                case EventEn.FatalError:
+                                    this.tSSLabel.BackColor = Color.Tomato;
+                                    this.tSSLabel.Text = e.Message;
+                                    break;
+                                default:
+                                    this.tSSLabel.BackColor = this.DefBaskCoclortSSLabel;
+                                    this.tSSLabel.Text = e.Message;
+                                    break;
+                            }
+                        }
+
+                        
+                        // Если нет фатальной ошибки то нужно обработать результат
+                        if (e.Evn != EventEn.FatalError || e.Tab != null)
+                        {
+
+                            /*
                                 // Если результата нет, то не нужно лазеть по таблице
                                 if (e.Tab != null && e.Tab.Rows.Count > 0)
                                 {
@@ -463,43 +533,16 @@ namespace Reminder
                                     {
                                         s = "Всё супер.";
                                     }
-                                }
-                            }
-                            else // Возникла ошибка результат чистим и выводим сообщение о том что есть серьёзнве ошибки
-                            {
-                                if (this.Tab != null) this.Tab.Rows.Clear();
-                                s = "Возникла ошибка при подключении к данным. " + e.Message;
-                            }
-                         */
+                                }*/
 
-                        // Для сообщения
-                        string AggMessage = "";
-
-                        if (e != null)
-                        {
-                            switch (e.Evn)
-                            {
-                                case EventEn.Empty:
-                                case EventEn.Dump:
-                                    break;
-                                case EventEn.Warning:
-                                    this.tSSLabel.BackColor = Color.Khaki;
-                                    this.tSSLabel.Text = e.Message;
-                                    break;
-                                case EventEn.Error:
-                                case EventEn.FatalError:
-                                    this.tSSLabel.BackColor = Color.Tomato;
-                                    this.tSSLabel.Text = e.Message;
-                                    break;
-                                default:
-                                    this.tSSLabel.BackColor = this.DefBaskCoclortSSLabel;
-                                    this.tSSLabel.Text = e.Message;
-                                    break;
-                            }
+                            // Вызов уведомления отображаем всплывающее окно только если комп не заблокирован
+                            if (AggMessage.Length > 0 && registered && Config.ShowNotification) this.m_notifyicon.ShowBalloonTip(5000, e.Evn.ToString(), AggMessage, ToolTipIcon.Info);
                         }
-
-                        // Вызов уведомления отображаем всплывающее окно только если комп не заблокирован
-                        if (AggMessage.Length > 0 && registered && Config.ShowNotification) this.m_notifyicon.ShowBalloonTip(5000, e.Evn.ToString(), AggMessage, ToolTipIcon.Info);
+                        else // Возникла ошибка результат чистим и выводим сообщение о том что есть серьёзнве ошибки
+                        {
+                            //if (this.Tab != null) this.Tab.Rows.Clear();
+                            //s = "Возникла ошибка при подключении к данным. " + e.Message;
+                        }
 
                         // Меняем иконку
                         EventStatusIcon(e.Evn);

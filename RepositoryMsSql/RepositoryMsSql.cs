@@ -16,7 +16,7 @@ namespace RepositoryMsSql
     /// <summary>
     /// Класс для реализации репозитория нашей программы для рпаботы с Ms Sql Server
     /// </summary>
-    public class RepositoryMsSql : Common.Repository, Common.RepositoryPlg.RepositoryI
+    public class RepositoryMsSql : Repository, Common.RepositoryPlg.RepositoryI
     {
         #region Параметры Private
 
@@ -268,7 +268,7 @@ namespace RepositoryMsSql
         public override void EventSaveDb(string Message, string Source, EventEn evn)
         {
             //int rez = 0;
-            string SQL = string.Format("insert into [dbo].[Log]([DateTime], [Message], [Source], [Status]) Values(GetDate(), '{0}', '{1}', '{2}')"
+            string SQL = string.Format("insert into [io].[Log]([DateTime], [Message], [Source], [Status]) Values(GetDate(), '{0}', '{1}', '{2}')"
                 , Message.Replace("'", "''"), Source.Replace("'", "''"), evn.ToString());
 
             try
@@ -302,6 +302,220 @@ namespace RepositoryMsSql
             finally
             {
             }
+        }
+
+        #endregion
+
+
+        #region Методы Public RepositoryI
+
+        /// <summary>
+        /// Метод для регистрации состояния пула с потоками
+        /// </summary>
+        /// <param name="MachineName">Имя машины где работает пул потоков</param>
+        /// <param name="CustomClassTyp">Имя класса с потоками этого вида</param>
+        /// <param name="LastDateReflection">Дата и время последнего получения статуса</param>
+        /// <param name="VersionPul">Версия пула с потоками</param>
+        /// <param name="LastStatusCustom">Статус который получили от самих потоков в этом пуле</param>
+        public void PulBasicSetStatus(string MachineName, string CustomClassTyp, DateTime LastDateReflection, string VersionPul, string LastStatusCustom)
+        {
+            string SQL = "[io].[PulBasicSetStatus]";
+            try
+            {
+                // Проверка подключения
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+
+                    using (SqlCommand com = new SqlCommand(SQL, con))
+                    {
+                        com.CommandTimeout = 900;  // 15 минут
+                        com.CommandType = CommandType.StoredProcedure;
+                        //
+                        //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
+                        //PIdOut.Direction = ParameterDirection.ReturnValue;
+                        //com.Parameters.Add(PIdOut);
+                        //
+                        //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
+                        //PId.Direction = ParameterDirection.Input;
+                        //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
+                        //com.Parameters.Add(PId);
+                        //
+                        SqlParameter PMachineName = new SqlParameter("@MachineName", SqlDbType.VarChar, 100);
+                        PMachineName.Direction = ParameterDirection.Input;
+                        PMachineName.Value = MachineName;
+                        com.Parameters.Add(PMachineName);
+                        //
+                        SqlParameter PCustomClassTyp = new SqlParameter("@CustomClassTyp", SqlDbType.VarChar, 300);
+                        PCustomClassTyp.Direction = ParameterDirection.Input;
+                        PCustomClassTyp.Value = CustomClassTyp;
+                        com.Parameters.Add(PCustomClassTyp);
+                        //
+                        SqlParameter PLastDateReflection = new SqlParameter("@LastDateReflection", SqlDbType.DateTime);
+                        PLastDateReflection.Direction = ParameterDirection.Input;
+                        PLastDateReflection.Value = LastDateReflection;
+                        com.Parameters.Add(PLastDateReflection);
+                        //
+                        SqlParameter PVersionPul = new SqlParameter("@VersionPul", SqlDbType.VarChar, 50);
+                        PVersionPul.Direction = ParameterDirection.Input;
+                        PVersionPul.Value = VersionPul;
+                        com.Parameters.Add(PVersionPul);
+                        //
+                        SqlParameter PLastStatusCustom = new SqlParameter("@LastStatusCustom", SqlDbType.VarChar, 50);
+                        PLastStatusCustom.Direction = ParameterDirection.Input;
+                        PLastStatusCustom.Value = LastStatusCustom;
+                        com.Parameters.Add(PLastStatusCustom);
+
+                        // Строим строку которую воткнём в дамп в случае падения
+                        SQL = GetStringPrintPar(com);
+
+                        // Запускаем процедуру
+                        com.ExecuteNonQuery();
+
+                        // Получаем идентификатор товара
+                        //rez = int.Parse(PIdOut.Value.ToString());
+                    }
+
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+            }
+        }
+
+        /// <summary>
+        /// Метод для регистрации состояния всей ноды воркера
+        /// </summary>
+        /// <param name="MachineName">Имя машины где работает пул потоков</param>
+        /// <param name="LastDateReflection">Дата и время последнего получения статуса</param>
+        /// <param name="VersionNode">Версия воркера</param>
+        /// <param name="LastStatusNode">Статус который получили от самой ноды</param>
+        public void NodeSetStatus(string MachineName, DateTime LastDateReflection, string VersionNode, string LastStatusNode)
+        {
+            string SQL = "[io].[NodeSetStatus]";
+            try
+            {
+                // Проверка подключения
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+
+                    using (SqlCommand com = new SqlCommand(SQL, con))
+                    {
+                        com.CommandTimeout = 900;  // 15 минут
+                        com.CommandType = CommandType.StoredProcedure;
+                        //
+                        //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
+                        //PIdOut.Direction = ParameterDirection.ReturnValue;
+                        //com.Parameters.Add(PIdOut);
+                        //
+                        //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
+                        //PId.Direction = ParameterDirection.Input;
+                        //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
+                        //com.Parameters.Add(PId);
+                        //
+                        SqlParameter PMachineName = new SqlParameter("@MachineName", SqlDbType.VarChar, 100);
+                        PMachineName.Direction = ParameterDirection.Input;
+                        PMachineName.Value = MachineName;
+                        com.Parameters.Add(PMachineName);
+                        //
+                        SqlParameter PLastDateReflection = new SqlParameter("@LastDateReflection", SqlDbType.DateTime);
+                        PLastDateReflection.Direction = ParameterDirection.Input;
+                        PLastDateReflection.Value = LastDateReflection;
+                        com.Parameters.Add(PLastDateReflection);
+                        //
+                        SqlParameter PVersionPul = new SqlParameter("@VersionNode", SqlDbType.VarChar, 50);
+                        PVersionPul.Direction = ParameterDirection.Input;
+                        PVersionPul.Value = VersionNode;
+                        com.Parameters.Add(PVersionPul);
+                        //
+                        SqlParameter PLastStatusCustom = new SqlParameter("@LastStatusNode", SqlDbType.VarChar, 50);
+                        PLastStatusCustom.Direction = ParameterDirection.Input;
+                        PLastStatusCustom.Value = LastStatusNode;
+                        com.Parameters.Add(PLastStatusCustom);
+
+                        // Строим строку которую воткнём в дамп в случае падения
+                        SQL = GetStringPrintPar(com);
+
+                        // Запускаем процедуру
+                        com.ExecuteNonQuery();
+
+                        // Получаем идентификатор товара
+                        //rez = int.Parse(PIdOut.Value.ToString());
+                    }
+
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+            }
+        }
+        #endregion
+
+        #region Методы Private Method
+
+        /// <summary>
+        /// Строим строку которую будем потом печатать во время выполнения команды к данному провайдеру
+        /// </summary>
+        /// <param name="com">Команда</param>
+        /// <returns>SQL предложение на основе соманды</returns>
+        private string GetStringPrintPar(SqlCommand com)
+        {
+            string rez = string.Format("exec {0}", com.CommandText);
+            try
+            {
+                // Строим строку которую воткнём в дамп в случае падения
+                bool isFirst = true;
+                foreach (SqlParameter item in com.Parameters)
+                {
+                    if (item.Direction != ParameterDirection.ReturnValue)
+                    {
+                        if (isFirst)
+                        {
+                            rez += " ";
+                            isFirst = false;
+                        }
+                        else rez += ", ";
+
+                        switch (item.SqlDbType)
+                        {
+                            case SqlDbType.Int:
+                                rez += string.Format("{0}={1}", item.ParameterName, (item.SqlValue == null ? "null" : item.SqlValue));
+                                break;
+                            case SqlDbType.DateTime:
+                                string tmp = "null";
+                                if (item.SqlValue != null)
+                                {
+                                    DateTime dt = (DateTime)item.Value;
+                                    // DateTime dt = DateTime.Parse(item.SqlValue.ToString());
+                                    tmp = string.Format("Declare @P{0} datetime = convert(datetime,convert(varchar, '{1}.{2:D3}', 21),21);", item.ParameterName.Replace(@"@", ""), dt.ToString("yyyy-MM-dd HH:mm:ss"), dt.Millisecond);
+
+                                    rez = tmp + "\r\n" + rez + string.Format("{0}={1}", item.ParameterName, @"@P" + item.ParameterName.Replace(@"@", ""));
+                                }
+                                else rez += string.Format("{0}={1}", item.ParameterName, "null");
+                                break;
+                            case SqlDbType.Money:
+                                rez += string.Format("{0}={1}", item.ParameterName, (item.SqlValue == null ? "null" : item.SqlValue.ToString().Replace(",", ".")));
+                                break;
+                            default:
+                                rez += string.Format("{0}={1}", item.ParameterName, (item.SqlValue == null ? "null" : string.Format("'{0}'", item.Value)));
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.EventSave(string.Format("Произошла ошибка при парсинге параметров. {0}", ex.Message), GetType().Name + ".GetStringPrintPar", EventEn.Error, true, false);
+                throw;
+            }
+            return rez;
         }
 
         #endregion

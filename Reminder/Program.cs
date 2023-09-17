@@ -29,17 +29,21 @@ namespace Reminder
                     // Подключаем конфиг
                     Config Cnf = new Config();
 
-                    // Тест плагинной технологии
-                    Customization tt = Common.CustomizationFarm.CreateNewCustomization(Common.CustomizationFarm.GetListCustomizationName()[0].Name);
-                    Common.CustomizationFarm.SetCurrentCustomization(tt);
-                    Repository rep = RepositoryFarm.CreateNewRepository("RepositoryMsSql");
+                    // Создаём Ферму с пулами и с доступными элементами для них
+                    IoFarm IF = new IoFarm();
+                    IoListFarm ILisF = new IoListFarm();
 
+                    // Тест плагинной технологии
+                    //Customization tt = Common.CustomizationFarm.CreateNewCustomization(Common.CustomizationFarm.GetListCustomizationName()[0].Name);
+                    //Common.CustomizationFarm.SetCurrentCustomization(tt);
+                    //Repository rep = RepositoryFarm.CreateNewRepository("RepositoryMsSql");
+                    //ProgramStatus.CreateCurentPulList();
 
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new FStart());
 
-                    Log.EventSave("Остановка приложения", " Program", EventEn.Message);
+                    Log.EventSave("Остановка приложения", "Program", EventEn.Message);
                 }
             }
             catch (Exception ex)

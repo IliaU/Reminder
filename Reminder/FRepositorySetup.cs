@@ -26,6 +26,8 @@ namespace Reminder
             {
                 InitializeComponent();
 
+                this.Icon = CustomizationFarm.CurCustomization.GetIconStatus(EventEn.Message);
+
                 // Подгружаем список возможных провайдеров
                 this.cmbBoxRepTyp.Items.Clear();
                 cmbBoxRepTypList = RepositoryFarm.ListRepositoryName;
@@ -99,7 +101,7 @@ namespace Reminder
             // Пользователь сохраняет данный репозиорий в качестве текущего
             if (HashSaveRepository)
             {
-                RepositoryFarm.SetCurrentRepository(RepTmp);
+                RepositoryFarm.SetCurrentRepository(RepTmp, true);
             }
 
             // Перечитываем текущую форму

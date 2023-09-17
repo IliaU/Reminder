@@ -63,9 +63,39 @@ namespace CustomLukoil {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
         /// </summary>
-        internal static System.Drawing.Icon Icon_Message {
+        internal static System.Drawing.Icon Icon_E {
             get {
-                object obj = ResourceManager.GetObject("Icon_Message", resourceCulture);
+                object obj = ResourceManager.GetObject("Icon_E", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon Icon_FE {
+            get {
+                object obj = ResourceManager.GetObject("Icon_FE", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon Icon_S {
+            get {
+                object obj = ResourceManager.GetObject("Icon_S", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon Icon_W {
+            get {
+                object obj = ResourceManager.GetObject("Icon_W", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

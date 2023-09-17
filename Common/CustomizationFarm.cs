@@ -178,7 +178,7 @@ namespace Common
                             //if (!flag5) continue;
                             if (!flag0) continue;
 
-                            ListCustomizationName.Add(new PluginClassElement(item.Name, item));
+                            ListCustomizationName.Add(new PluginClassElement(item.Name, item, null));
                         }
                     }
                 }

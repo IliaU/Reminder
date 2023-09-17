@@ -13,8 +13,13 @@ namespace CustomLukoil
     /// <summary>
     /// Класс для реализации кастомизации нашей программы для компании Lukoil
     /// </summary>
-    public class CustomLukoil : Common.Customization, Common.CustomizationPlg.CustomizationI
+    public class CustomLukoil : Customization, Common.CustomizationPlg.CustomizationI
     {
+        /// <summary>
+        /// Храним последнее состояние значка и его значение по умолчанию
+        /// </summary>
+        private static Icon CurIcon = Resource.Icon_S;
+
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -46,7 +51,29 @@ namespace CustomLukoil
         {
             try
             {
-                return Resource.Icon_Message;
+                switch (evn)
+                {
+                    case EventEn.Success:
+                        CurIcon = Resource.Icon_S;
+                        break;
+                    case EventEn.Warning:
+                        CurIcon = Resource.Icon_W;
+                        break;
+                    case EventEn.Error:
+                        CurIcon = Resource.Icon_E;
+                        break;
+                    case EventEn.FatalError:
+                        CurIcon = Resource.Icon_FE;
+                        break;
+                    case EventEn.Message:
+                    case EventEn.Empty:
+                    case EventEn.Dump:
+                    case EventEn.Trace:
+                    default:
+                        break;
+                }
+
+                return CurIcon;
             }
             catch (Exception ex)
             {
@@ -54,8 +81,6 @@ namespace CustomLukoil
                 this.EventSave(ae.Message, string.Format("{0}.GetIconStatus", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
-
-
         }
 
         /// <summary>

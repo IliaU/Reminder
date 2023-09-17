@@ -8,6 +8,6 @@ namespace Common
 {
     public enum EventEn
     {
-        Empty, Dump, Message, Warning, Error, FatalError, Trace
+        Empty, Dump, Message, Success, Warning, Error, FatalError, Trace
     }
 }

@@ -19,13 +19,12 @@ namespace Common.RepositoryPlg
 
         #endregion
 
-
         #region Param (public get; protected set;)
 
         /// <summary>
         /// Тип палгина
         /// </summary>
-        public string PlugInType { get; private set; }
+        public string PlugInType { get; private set; } = null;
 
 
         /// <summary>

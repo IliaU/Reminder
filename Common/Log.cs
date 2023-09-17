@@ -152,11 +152,30 @@ namespace Common
             {
                 lock (obj)//FileLog
                 {
+                    // Получаем имя файла с учётом префикса
                     string newFile = (string.IsNullOrWhiteSpace(FileName) ? File : FileName);
 
+                    // Пишем в файл
                     using (StreamWriter SwFileLog = new StreamWriter(Environment.CurrentDirectory + @"\" + newFile, true))
                     {
                         SwFileLog.WriteLine(DateTime.Now.ToString() + "\t" + evn.ToString() + "\t" + Source + "\t" + Message);
+                    }
+
+                    try
+                    {
+                        // Если есть подключение к базе данных то пробуем записать информацию в базу данных
+                        if (RepositoryFarm.CurRepository!=null && RepositoryFarm.CurRepository.HashConnect)
+                        {
+                            RepositoryFarm.CurRepository.EventSaveDb(Message, string.Format("[{1}@{0}].{2}", Environment.MachineName, Environment.UserName, Source), evn);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Если не получилось записать в базу данных то фиксируем информацию о такой проблеме в лог
+                        using (StreamWriter SwFileLog = new StreamWriter(Environment.CurrentDirectory + @"\" + newFile, true))   //,Encoding.Unicode
+                        {
+                            SwFileLog.WriteLine(DateTime.Now.ToString() + "\t" + EventEn.Error.ToString() + "\t" + "Log.EventSave" + "\t" + ex.Message);
+                        }
                     }
                 }
             }

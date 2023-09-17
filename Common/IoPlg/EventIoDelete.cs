@@ -4,30 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-namespace Common
+namespace Common.IoPlg
 {
-    public class EventHashLock : EventArgs
+    /// <summary>
+    /// Класс для обработки события удаления инстанса
+    /// </summary>
+    public class EventIoDelete : EventArgs
     {
         /// <summary>
-        /// Состояние блокировки операционной системы
+        /// Удаляемый объект объект
         /// </summary>
-        public bool HashLock = false;
+        public Io dIo { get; private set; }
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="HashLock">Состояние блокировки операционной системы</param>
-        public EventHashLock (bool HashLock)
+        /// <param name="dIo">Удаляемый объект</param>
+        public EventIoDelete(Io dIo)
         {
             try
             {
-                this.HashLock = HashLock;
+                this.dIo = dIo;
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.EventHashLock", this.GetType().FullName), EventEn.Error);
+                Log.EventSave(ae.Message, string.Format("{0}.EventIoDelete", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
