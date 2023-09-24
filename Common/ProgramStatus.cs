@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Threading;
+using System.Reflection;
+using Common.RepositoryPlg;
+
 namespace Common
 {
     /// <summary>
@@ -11,6 +15,12 @@ namespace Common
     /// </summary>
     public class ProgramStatus
     {
+
+        /// <summary>
+        /// Поток с асинхронной обработкой
+        /// </summary>
+        private static Thread ThrAStartCompileListing;
+
         /// <summary>
         /// Состояние блокировки операционной системы
         /// </summary>
@@ -58,6 +68,11 @@ namespace Common
         public static List<IoList> CurentIoPulList = null;
 
         /// <summary>
+        /// Флаг для аснхронного процесса который отображает текущий статус процесса
+        /// </summary>
+        public static bool IsRunThrCreateCurentPulList { get; private set; } = false;
+
+        /// <summary>
         /// Процесс создания и запуска процессов в наших пулах с плагинами
         /// </summary>
         public static void CreateCurentPulList()
@@ -79,7 +94,7 @@ namespace Common
                             CurentIoPulList.Add(nIoList);
 
                             // Запускаем процесс на нашем пуле в базовом классе
-                            nIoList.StartCompileListing();
+                            // nIoList.StartCompileListing();
                         }
                     }
                 }
@@ -92,114 +107,147 @@ namespace Common
             }
         }
 
-        /* 
- /// <summary>
- /// Асинхронный статус для фиксации состояния всей ноды целиком чтобы видеть работает она сейчас или нет на стороне базы
- /// </summary>
- private static void ACreateCurentPulList()
- {
-     try
-     {
-         // Устанавливаем тайм из конфига
-         int CountWhile = Com.Config.SecondPulRefreshStatus;
+        /// <summary>
+        /// Запуск асинхронного процесса обслуживающенго наш пул с точки зрения общих вещей на уровне базового класса
+        /// </summary>
+        public static void StartCompileListing()
+        {
+            try
+            {
+                // Если список пулов ещё не создавали то создаём его
+                if (CurentIoPulList == null) throw new ApplicationException("Список пулов ещё не подгружен и не создан.");
 
-         while (IsRunThrCreateCurentPulList)
+                if (IsRunThrCreateCurentPulList) throw new ApplicationException("Процесс уже запущен. Надо сначало остановить текущий процесс и дождаться окончания его работы.");
+                IsRunThrCreateCurentPulList = true;
+
+                // Асинхронный запуск процесса
+                ThrAStartCompileListing = new Thread(ACreateCurentPulList);
+                ThrAStartCompileListing.Name = "ACreateCurentPulList";
+                ThrAStartCompileListing.IsBackground = true;
+                ThrAStartCompileListing.Start();
+
+
+                // Пробегаем по всем доступным объектам и запускаем в них процесс
+                foreach (IoList itemPul in CurentIoPulList)
+                {
+                    itemPul.StartCompileListing();
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+                throw ae;
+            }
+        }
+
+        /// <summary>
+        /// Асинхронный статус для фиксации состояния всей ноды целиком чтобы видеть работает она сейчас или нет на стороне базы
+        /// </summary>
+        private static void ACreateCurentPulList()
+        {
+            try
+            {
+                // Устанавливаем тайм из конфига
+                int CountWhile = Config.SecondPulRefreshStatus;
+
+                while (IsRunThrCreateCurentPulList)
+                {
+                    if (CountWhile == 0)
+                    {
+                        // Устанавливаем тайм аут из конфига
+                        CountWhile = Config.SecondPulRefreshStatus;
+
+                        // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
+                        if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                        {
+                            // Фиксируем версию нашего приложения и его статус
+                            Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                            ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Running.ToString());
+                        }
+                    }
+
+                    Thread.Sleep(1000);     // Тайм аут между проверками статуса
+                    CountWhile--;
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, "ProgramStatus.CreateCurentPulList", EventEn.Error);
+                throw ae;
+            }
+        }
+
+         /// <summary>
+         /// Остановка аснхронных процессов перед выключением всех потоков
+         /// </summary>
+         public static void Stop()
          {
-             if (CountWhile == 0)
+             try
              {
-                 // Устанавливаем тайм аут из конфига
-                 CountWhile = Com.Config.SecondPulRefreshStatus;
+                // Если список пулов создавали
+                if (CurentIoPulList != null)
+                {
+                    IsRunThrCreateCurentPulList = false;
 
-                 // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
-                 if (Com.RepositoryFarm.CurentRep != null && Com.RepositoryFarm.CurentRep.HashConnect)
+                    // Пробегаем по всем доступным объектам
+                    foreach (IoList itemPul in CurentIoPulList)
+                    {
+                        itemPul.StopCompileListing();
+                    }
+                }
+             }
+             catch (Exception ex)
+             {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+                throw ae;
+             }
+         }
+
+         /// <summary>
+         /// Остановка аснхронных процессов перед выключением всех потоков
+         /// </summary>
+         /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
+         public static void Join(bool Aborting)
+         {
+             try
+             {
+                 // Если список пулов ещё не создавали то создаём его
+                 if (CurentIoPulList != null)
                  {
-                     // Фиксируем версию нашего приложения и его статус
-                     Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                     ((RepositoryI)Com.RepositoryFarm.CurentRep).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Runned.ToString());
+                     // Пробегаем по всем доступным объектам
+                     Stop();
+
+                     if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                     {
+                         // Фиксируем версию нашего приложения и его статус
+                         Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                         ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stoping.ToString());
+                     }
+
+                     // Пробегаем по всем доступным объектам
+                     foreach (IoList itemPul in CurentIoPulList)
+                     {
+                         itemPul.Join(Aborting);
+                     }
+
+                     if (ThrAStartCompileListing != null) ThrAStartCompileListing.Join();
+                     if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                     {
+                         // Фиксируем версию нашего приложения и его статус
+                         Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                         ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stop.ToString());
+                     }
                  }
              }
-
-             Thread.Sleep(1000);     // Тайм аут между проверками статуса
-             CountWhile--;
-         }
-     }
-     catch (Exception ex)
-     {
-         Com.Log.EventSave(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message), "IoFarm.CreateCurentPuulList", EventEn.Error, true, true);
-         throw ex;
-     }
- }
-
-
- /// <summary>
- /// Остановка аснхронных процессов перед выключением всех потоков
- /// </summary>
- public static void Stop()
- {
-     try
-     {
-         // Если список пулов ещё создавали
-         if (CurentPulList != null)
-         {
-             IsRunThrCreateCurentPulList = false;
-
-             // Пробегаем по всем доступным объектам
-             foreach (IoBase.IoListBase.CrossLink itemPul in CurentPulCrossLink)
+             catch (Exception ex)
              {
-                 itemPul.StopCompileListing();
+                ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+                throw ae;
              }
          }
-     }
-     catch (Exception ex)
-     {
-         Com.Log.EventSave(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message), "IoFarm.Stop", EventEn.Error, true, true);
-         throw ex;
-     }
- }
-
- /// <summary>
- /// Остановка аснхронных процессов перед выключением всех потоков
- /// </summary>
- /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
- public static void Join(bool Aborting)
- {
-     try
-     {
-         // Если список пулов ещё не создавали то создаём его
-         if (CurentPulList != null)
-         {
-             // Пробегаем по всем доступным объектам
-             Stop();
-
-             if (Com.RepositoryFarm.CurentRep != null && Com.RepositoryFarm.CurentRep.HashConnect)
-             {
-                 // Фиксируем версию нашего приложения и его статус
-                 Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                 ((RepositoryI)Com.RepositoryFarm.CurentRep).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stoping.ToString());
-             }
-
-             // Пробегаем по всем доступным объектам
-             foreach (IoBase.IoListBase.CrossLink itemPul in CurentPulCrossLink)
-             {
-                 itemPul.Join(Aborting);
-             }
-
-             if (ThrCreateCurentPulList != null) ThrCreateCurentPulList.Join();
-             if (Com.RepositoryFarm.CurentRep != null && Com.RepositoryFarm.CurentRep.HashConnect)
-             {
-                 // Фиксируем версию нашего приложения и его статус
-                 Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                 ((RepositoryI)Com.RepositoryFarm.CurentRep).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stop.ToString());
-             }
-         }
-     }
-     catch (Exception ex)
-     {
-         Com.Log.EventSave(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message), "IoFarm.Join", EventEn.Error, true, true);
-         throw ex;
-     }
- }
- */
-
     }
 }

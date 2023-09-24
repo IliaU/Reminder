@@ -37,6 +37,16 @@ namespace Common.IoPlg
         /// </summary>
         public int index { get; protected set; } = -1;
 
+        /// <summary>
+        /// Информация по файлу
+        /// </summary>
+        public PluginClassElementList FileInfo;
+
+        /// <summary>
+        /// Информация по классу
+        /// </summary>
+        public PluginClassElement ElementDll;
+
         #endregion
 
 

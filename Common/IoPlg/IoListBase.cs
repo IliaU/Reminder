@@ -478,10 +478,10 @@ namespace Common.IoPlg
                     throw ae;
                 }
             }
-            
+
             #endregion
 
-            /*
+
             #region CrossClass
 
             /// <summary>
@@ -511,62 +511,61 @@ namespace Common.IoPlg
                     }
                 }
 
-                /// <summary>
-                /// Запуск асинхронного процесса обслуживающенго наш пул с точки зрения общих вещей на уровне базового класса
-                /// </summary>
-                public void StartCompileListing()
-                {
-                    try
-                    {
-                        this.CustIoList.StartCompileListing();
-                    }
-                    catch (Exception ex)
-                    {
-                        ApplicationException ae = new ApplicationException(string.Format("Упали при запуске асинхронного процесса: ({0})", ex.Message));
-                        Log.EventSave(ae.Message, string.Format("{0}.StartCompileListing", this.GetType().FullName), EventEn.Error);
-                        throw ae;
-                    }
+                /*             /// <summary>
+                             /// Запуск асинхронного процесса обслуживающенго наш пул с точки зрения общих вещей на уровне базового класса
+                             /// </summary>
+                             public void StartCompileListing()
+                             {
+                                 try
+                                 {
+                                     this.CustIoList.StartCompileListing();
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     ApplicationException ae = new ApplicationException(string.Format("Упали при запуске асинхронного процесса: ({0})", ex.Message));
+                                     Log.EventSave(ae.Message, string.Format("{0}.StartCompileListing", this.GetType().FullName), EventEn.Error);
+                                     throw ae;
+                                 }
+                             }
+
+                             /// <summary>
+                             /// Остановка асинхронного процесса обслуживающенго наш пул с точки зрения общих вещей на уровне базового класса без ожидания завершения процесса
+                             /// </summary>
+                             public void StopCompileListing()
+                             {
+                                 try
+                                 {
+                                     this.CustIoList.StopCompileListing();
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     ApplicationException ae = new ApplicationException(string.Format("Упали при остановке асинхронного процесса: ({0})", ex.Message));
+                                     Log.EventSave(ae.Message, string.Format("{0}.StopCompileListing", this.GetType().FullName), EventEn.Error);
+                                     throw ae;
+                                 }
+                             }
+
+                             /// <summary>
+                             /// Остановка аснхронных процессов перед выключением всех потоков
+                             /// </summary>
+                             /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
+                             public void Join(bool Aborting)
+                             {
+                                 try
+                                 {
+                                     this.CustIoList.Join(Aborting);
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     ApplicationException ae = new ApplicationException(string.Format("Упали при ожиданииостановки асинхронного процесса: ({0})", ex.Message));
+                                     Log.EventSave(ae.Message, string.Format("{0}.Join", this.GetType().FullName), EventEn.Error);
+                                     throw ae;
+                                 }
+                             }
+                         }
+                */
                 }
-
-                /// <summary>
-                /// Остановка асинхронного процесса обслуживающенго наш пул с точки зрения общих вещей на уровне базового класса без ожидания завершения процесса
-                /// </summary>
-                public void StopCompileListing()
-                {
-                    try
-                    {
-                        this.CustIoList.StopCompileListing();
-                    }
-                    catch (Exception ex)
-                    {
-                        ApplicationException ae = new ApplicationException(string.Format("Упали при остановке асинхронного процесса: ({0})", ex.Message));
-                        Log.EventSave(ae.Message, string.Format("{0}.StopCompileListing", this.GetType().FullName), EventEn.Error);
-                        throw ae;
-                    }
-                }
-
-                /// <summary>
-                /// Остановка аснхронных процессов перед выключением всех потоков
-                /// </summary>
-                /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
-                public void Join(bool Aborting)
-                {
-                    try
-                    {
-                        this.CustIoList.Join(Aborting);
-                    }
-                    catch (Exception ex)
-                    {
-                        ApplicationException ae = new ApplicationException(string.Format("Упали при ожиданииостановки асинхронного процесса: ({0})", ex.Message));
-                        Log.EventSave(ae.Message, string.Format("{0}.Join", this.GetType().FullName), EventEn.Error);
-                        throw ae;
-                    }
-                }
-            }
-
-            #endregion
-
-            */
+            #endregion    
         }
     }
 }

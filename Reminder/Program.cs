@@ -30,8 +30,12 @@ namespace Reminder
                     Config Cnf = new Config();
 
                     // Создаём Ферму с пулами и с доступными элементами для них
-                    IoFarm IF = new IoFarm();
+                    IoFarm IoF = new IoFarm();
                     IoListFarm ILisF = new IoListFarm();
+                    //IoFarm.CreateNewIo(IoFarm.ListIoName[0].Items[0]);
+                    //IoListFarm.CreateNewIoList(IoListFarm.ListIoListName[0].Items[0]);
+                    ProgramStatus.CreateCurentPulList();        // Запускаем объект который содержит нужные пуля со спписком объектов внутри пулов чтобы пул был того же типа как и объекты которые для него
+                    ProgramStatus.StartCompileListing();        // Запуск асинхронного процесса мониторинга ноды
 
                     // Тест плагинной технологии
                     //Customization tt = Common.CustomizationFarm.CreateNewCustomization(Common.CustomizationFarm.GetListCustomizationName()[0].Name);
@@ -44,6 +48,9 @@ namespace Reminder
                     Application.Run(new FStart());
 
                     Log.EventSave("Остановка приложения", "Program", EventEn.Message);
+                    ProgramStatus.Stop();
+                    ProgramStatus.Join(false);
+                    Log.EventSave("Приложение остановлено", "Program", EventEn.Message);
                 }
             }
             catch (Exception ex)

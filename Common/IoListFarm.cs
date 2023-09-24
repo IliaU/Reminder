@@ -195,11 +195,13 @@ namespace Common
                     object[] targ = { Plg };
                     rez = (IoList)Activator.CreateInstance(Plg.EmptTyp/*, targ*/);
 
-                    ((IoList)rez).FileInfo = Plg.FileInfo;
-                    ((IoList)rez).ElementDll = Plg;
+                    rez.FileInfo = Plg.FileInfo;
+                    rez.ElementDll = Plg;
+                    //((IoList)rez).FileInfo = Plg.FileInfo;
+                    //((IoList)rez).ElementDll = Plg;
 
                     // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
-                    //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
+                    IoPlg.IoBase.IoListBase.CrossLink CrLink = new IoPlg.IoBase.IoListBase.CrossLink(rez);
                 }
 
             }

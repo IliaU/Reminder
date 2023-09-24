@@ -226,6 +226,9 @@ namespace Common
                     //object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
                     rez = (Io)Activator.CreateInstance(Plg.EmptTyp/*, targ*/);
 
+                    rez.FileInfo = Plg.FileInfo;
+                    rez.ElementDll = Plg;
+
                     // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
                     //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
                 }
