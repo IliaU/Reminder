@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventRepositoryFarm.cs" />
+    <Compile Include="Segment.cs" />
     <Compile Include="Io.cs" />
     <Compile Include="IoFarm.cs" />
     <Compile Include="IoList.cs" />
@@ -79,6 +80,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="Task.cs" />
+    <Compile Include="TaskSpace.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">
