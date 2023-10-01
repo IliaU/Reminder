@@ -46,11 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FProviderSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FProviderSetup.Designer.cs">
+      <DependentUpon>FProviderSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="FRepositorySetup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FRepositorySetup.Designer.cs">
       <DependentUpon>FRepositorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FSetup.Designer.cs">
+      <DependentUpon>FSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="FStart.cs">
       <SubType>Form</SubType>
@@ -60,8 +72,14 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FProviderSetup.resx">
+      <DependentUpon>FProviderSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FRepositorySetup.resx">
       <DependentUpon>FRepositorySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FSetup.resx">
+      <DependentUpon>FSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FStart.resx">
       <DependentUpon>FStart.cs</DependentUpon>

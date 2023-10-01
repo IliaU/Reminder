@@ -11,11 +11,11 @@ using System.Windows.Forms;
 using Common;
 using System.Data.SqlClient;
 
-namespace RepositoryMsSql
+namespace ProviderMsSql
 {
     public partial class FSetupConnectDB : Form
     {
-        private RepositoryMsSql Rep;
+        private ProviderMsSql Prv;
         private Boolean isEdit = false;
 
         private string OldConnectionString;
@@ -24,29 +24,29 @@ namespace RepositoryMsSql
         /// <summary>
         /// Конструктор по настройке нативного подключения к базе данных
         /// </summary>
-        /// <param name="Rep">Репозиторий который мы настраиваем</param>
-        public FSetupConnectDB(RepositoryMsSql Rep)
+        /// <param name="Prv">Провайдер который мы настраиваем</param>
+        public FSetupConnectDB(ProviderMsSql Prv)
         {
             try
             {
-                this.Rep = Rep;
-                this.NewConnectionString = Rep.ConnectionString;
+                this.Prv = Prv;
+                this.NewConnectionString = Prv.ConnectionString;
                 InitializeComponent();
 
                 this.Icon = CustomizationFarm.CurCustomization.GetIconStatus(EventEn.Message);
 
                 // Если мы редактируем элемент, то подгружаем имя провайдера
-                if (Rep.ConnectionString != null && Rep.ConnectionString != string.Empty)
+                if (Prv.ConnectionString != null && Prv.ConnectionString != string.Empty)
                 {
-                    this.Rep.Scsb = new SqlConnectionStringBuilder(Rep.ConnectionString);
-                    this.txtBox_Server_MSSQL.Text = this.Rep.Scsb.DataSource;
-                    this.cBox_Audent.Checked = this.Rep.Scsb.IntegratedSecurity;
+                    this.Prv.Scsb = new SqlConnectionStringBuilder(Prv.ConnectionString);
+                    this.txtBox_Server_MSSQL.Text = this.Prv.Scsb.DataSource;
+                    this.cBox_Audent.Checked = this.Prv.Scsb.IntegratedSecurity;
                     if (this.cBox_Audent.Checked)
                     {
-                        this.txtBox_Login_MSSQL.Text = this.Rep.Scsb.UserID;
-                        this.txtBox_Passvord_MSSQL.Text = this.Rep.Scsb.Password;
+                        this.txtBox_Login_MSSQL.Text = this.Prv.Scsb.UserID;
+                        this.txtBox_Passvord_MSSQL.Text = this.Prv.Scsb.Password;
                     }
-                    this.OldConnectionString = this.Rep.ConnectionString;
+                    this.OldConnectionString = this.Prv.ConnectionString;
                     this.isEdit = true;
                     BD_MSSQL_Clear_MSSQL();
                 }
@@ -65,7 +65,6 @@ namespace RepositoryMsSql
         {
             try
             {
-
                 if (this.cBox_Audent.Checked) this.panel_MSSQL_Login.Visible = false;
                 else this.panel_MSSQL_Login.Visible = true;
             }
@@ -82,7 +81,7 @@ namespace RepositoryMsSql
         {
             try
             {
-                this.NewConnectionString = this.Rep.InstalRepository(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.SelectedText, true, false, false);
+                this.NewConnectionString = this.Prv.InstalProvider(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.SelectedText, true, false, false);
                 if (!string.IsNullOrWhiteSpace(this.NewConnectionString)) MessageBox.Show("Тестирование подключения завершилось успешно");
             }
             catch (Exception ex)
@@ -98,7 +97,7 @@ namespace RepositoryMsSql
         {
             try
             {
-                this.NewConnectionString = this.Rep.InstalRepository(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.Text, true, false, false);
+                this.NewConnectionString = this.Prv.InstalProvider(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.Text, true, false, false);
                 if (!string.IsNullOrWhiteSpace(this.NewConnectionString)) this.DialogResult = DialogResult.Yes;
                 else this.DialogResult = DialogResult.No;
 
@@ -124,14 +123,14 @@ namespace RepositoryMsSql
                     string ConnectionStringTmp = null;
                     try
                     {
-                        ConnectionStringTmp = this.Rep.InstalRepository(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.SelectedText, false, false, false);
+                        ConnectionStringTmp = this.Prv.InstalProvider(this.txtBox_Server_MSSQL.Text, this.cBox_Audent.Checked, (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Login_MSSQL.Text) ? null : this.txtBox_Login_MSSQL.Text), (this.cBox_Audent.Checked && !string.IsNullOrWhiteSpace(this.txtBox_Passvord_MSSQL.Text) ? null : this.txtBox_Passvord_MSSQL.Text), this.cBox_BD_MSSQL.SelectedText, false, false, false);
                     }
                     catch (Exception) { }
 
                     // проверяем подключение и получаем список доступных баз
                     if (!string.IsNullOrWhiteSpace(ConnectionStringTmp))
                     {
-                        foreach (string item in this.Rep.GetBdList(ConnectionStringTmp))
+                        foreach (string item in this.Prv.GetBdList(ConnectionStringTmp))
                         {
                             this.cBox_BD_MSSQL.Items.Add(item);
                         }
@@ -161,8 +160,8 @@ namespace RepositoryMsSql
                 {
                     if (this.isEdit)
                     {
-                        this.txtBox_Login_MSSQL.Text = this.Rep.Scsb.UserID;
-                        this.txtBox_Passvord_MSSQL.Text = this.Rep.Scsb.Password;
+                        this.txtBox_Login_MSSQL.Text = this.Prv.Scsb.UserID;
+                        this.txtBox_Passvord_MSSQL.Text = this.Prv.Scsb.Password;
                     }
 
                     // Подгружаем список доступных баз
@@ -170,7 +169,7 @@ namespace RepositoryMsSql
                     {
                         cBox_BD_MSSQL_MouseEnter(null, null);
                         if (this.cBox_BD_MSSQL.Items.Count == 0) this.cBox_BD_MSSQL.Text = "";
-                        else this.cBox_BD_MSSQL.Text = this.Rep.Scsb.InitialCatalog;
+                        else this.cBox_BD_MSSQL.Text = this.Prv.Scsb.InitialCatalog;
                     }
                     catch (Exception) { }
                 }

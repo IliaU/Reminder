@@ -9,7 +9,7 @@ namespace Common.ParamPlg
     /// <summary>
     /// Класс для реализации конкретного парметра
     /// </summary>
-    public class ParamBase
+    public abstract partial class ParamBase
     {
         #region Param (private)
 

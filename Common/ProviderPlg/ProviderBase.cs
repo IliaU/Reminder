@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.RepositoryPlg
+namespace Common.ProviderPlg
 {
     /// <summary>
-    /// Абстрактный класс для репозитория
+    /// Абстрактный класс для провайдера
     /// </summary>
-    public abstract class RepositoryBase
+    public abstract class ProviderBase
     {
         #region Param (private)
         /// <summary>
@@ -79,8 +79,8 @@ namespace Common.RepositoryPlg
         /// </summary>
         /// <param name="PlugInType">Тип палгина - this.GetType().FullName || Assembly.GetExecutingAssembly().FullName</param>
         /// <param name="VersionPlg">Версия плагина - Assembly.GetExecutingAssembly().GetName().Version.ToString()</param>
-        /// <param name="ConnectionString">Строка подключения к репозиторию</param>
-        public RepositoryBase(string PlugInType, string VersionPlg, string ConnectionString)
+        /// <param name="ConnectionString">Строка подключения к провайдеру</param>
+        public ProviderBase(string PlugInType, string VersionPlg, string ConnectionString)
         {
             try
             {
@@ -92,12 +92,12 @@ namespace Common.RepositoryPlg
                 this.VersionPlg = VersionPlg;
                 this.ConnectionString = ConnectionString;
 
-                Log.EventSave(string.Format("Загружен плагин репозитория {0} ({1})", this.PlugInType, this.VersionPlg), this.GetType().FullName, EventEn.Message);
+                Log.EventSave(string.Format("Загружен плагин провайдера {0} ({1})", this.PlugInType, this.VersionPlg), this.GetType().FullName, EventEn.Message);
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.RepositoryBase", this.GetType().FullName), EventEn.Error);
+                Log.EventSave(ae.Message, string.Format("{0}.ProviderBase", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
@@ -213,9 +213,9 @@ namespace Common.RepositoryPlg
         /// <summary>
         /// Вывод строки подключения в лог или интерфейс пользователя с затиранием пароля
         /// </summary>
-        /// <param name="Rep">Репозиторий который мы хотим править</param>
-        /// <returns>True если пользователь решил сохранить репозиторй | False если пользователь не хочет сохранять</returns>
-        public virtual bool SetupConnectDB(ref Repository Rep)
+        /// <param name="Prv">Провайдер который мы хотим править</param>
+        /// <returns>True если пользователь решил сохранить провайдер | False если пользователь не хочет сохранять</returns>
+        public virtual bool SetupConnectDB(ref Provider Prv)
         {
             try
             {
@@ -228,45 +228,6 @@ namespace Common.RepositoryPlg
                 throw ae;
             }
         }
-
-        // <summary>
-        /// Запись лога в базу данных
-        /// </summary>
-        /// <param name="Message">Сообщение которое пишем в базу данных</param>
-        /// <param name="Source">Источник где оно возникло</param>
-        /// <param name="evn">Событие системное которое фиксируем</param>
-        public virtual void EventSaveDb(string Message, string Source, EventEn evn)
-        {
-            try
-            {
-                throw new ApplicationException("Необходимо перезаписать метод EventSave(string Message, string Source, EventEn evn) в наследуемом классе чтобы была возмоность писать в лог.");
-            }
-            catch (Exception ex)
-            {
-                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе печати строки подключения:""{0}""", ex.Message));
-                EventSave(ae.Message, string.Format("{0}.EventSaveDb", this.GetType().FullName), EventEn.Error);
-                throw ae;
-            }
-        }
-
-        /*
-        /// <summary>
-        /// Получение списка инстансов из разы репозитория
-        /// </summary>
-        /// <returns>Возвращаем списокинстансов</returns>
-        public virtual List<TInstance> GetTInstanceList()
-        {
-            try
-            {
-                throw new ApplicationException("Необходимо перезаписать метод List<TInstance> GetTInstanceList() в наследуемом классе чтобы метод работал корректно.");
-            }
-            catch (Exception ex)
-            {
-                Com.Log.EventSave(string.Format(@"Ошибка в методе GetTInstanceList:""{0}""", ex.Message), this.GetType().FullName, EventEn.Error, true, true);
-                throw ex;
-            }
-        }
-        */
 
         #endregion
     }

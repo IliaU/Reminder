@@ -38,9 +38,12 @@ namespace Reminder
             this.tSSLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.pnlTopRight = new System.Windows.Forms.Panel();
-            this.pnlFill = new System.Windows.Forms.Panel();
             this.PicStatRepOfline = new System.Windows.Forms.PictureBox();
             this.PicStatRepOnline = new System.Windows.Forms.PictureBox();
+            this.pnlFill = new System.Windows.Forms.Panel();
+            this.TsmItemConfigProviderObj = new System.Windows.Forms.ToolStripMenuItem();
+            this.TsmItemConfigProviderMon = new System.Windows.Forms.ToolStripMenuItem();
+            this.TsmItemConfigParam = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.pnlTop.SuspendLayout();
@@ -64,7 +67,10 @@ namespace Reminder
             // TsmItemConfig
             // 
             this.TsmItemConfig.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TsmItemConfigRepository});
+            this.TsmItemConfigRepository,
+            this.TsmItemConfigProviderObj,
+            this.TsmItemConfigProviderMon,
+            this.TsmItemConfigParam});
             this.TsmItemConfig.Name = "TsmItemConfig";
             this.TsmItemConfig.Size = new System.Drawing.Size(97, 32);
             this.TsmItemConfig.Text = "Настройка";
@@ -72,7 +78,7 @@ namespace Reminder
             // TsmItemConfigRepository
             // 
             this.TsmItemConfigRepository.Name = "TsmItemConfigRepository";
-            this.TsmItemConfigRepository.Size = new System.Drawing.Size(262, 26);
+            this.TsmItemConfigRepository.Size = new System.Drawing.Size(392, 26);
             this.TsmItemConfigRepository.Text = "Настройка репозитория";
             this.TsmItemConfigRepository.Click += new System.EventHandler(this.TsmItemConfigRepository_Click);
             // 
@@ -120,14 +126,6 @@ namespace Reminder
             this.pnlTopRight.Size = new System.Drawing.Size(172, 36);
             this.pnlTopRight.TabIndex = 0;
             // 
-            // pnlFill
-            // 
-            this.pnlFill.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlFill.Location = new System.Drawing.Point(0, 36);
-            this.pnlFill.Name = "pnlFill";
-            this.pnlFill.Size = new System.Drawing.Size(800, 490);
-            this.pnlFill.TabIndex = 3;
-            // 
             // PicStatRepOfline
             // 
             this.PicStatRepOfline.Dock = System.Windows.Forms.DockStyle.Left;
@@ -151,6 +149,35 @@ namespace Reminder
             this.PicStatRepOnline.TabIndex = 2;
             this.PicStatRepOnline.TabStop = false;
             this.PicStatRepOnline.Visible = false;
+            // 
+            // pnlFill
+            // 
+            this.pnlFill.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlFill.Location = new System.Drawing.Point(0, 36);
+            this.pnlFill.Name = "pnlFill";
+            this.pnlFill.Size = new System.Drawing.Size(800, 490);
+            this.pnlFill.TabIndex = 3;
+            // 
+            // TsmItemConfigProviderObj
+            // 
+            this.TsmItemConfigProviderObj.Name = "TsmItemConfigProviderObj";
+            this.TsmItemConfigProviderObj.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigProviderObj.Text = "Настройка провайдера объектов";
+            this.TsmItemConfigProviderObj.Click += new System.EventHandler(this.TsmItemConfigProviderObj_Click);
+            // 
+            // TsmItemConfigProviderMon
+            // 
+            this.TsmItemConfigProviderMon.Name = "TsmItemConfigProviderMon";
+            this.TsmItemConfigProviderMon.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigProviderMon.Text = "Настройка провайдера мониторинга";
+            this.TsmItemConfigProviderMon.Click += new System.EventHandler(this.TsmItemConfigProviderMon_Click);
+            // 
+            // TsmItemConfigParam
+            // 
+            this.TsmItemConfigParam.Name = "TsmItemConfigParam";
+            this.TsmItemConfigParam.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigParam.Text = "Настройка других параметров программы";
+            this.TsmItemConfigParam.Click += new System.EventHandler(this.TsmItemConfigParam_Click);
             // 
             // FStart
             // 
@@ -195,6 +222,9 @@ namespace Reminder
         private System.Windows.Forms.ToolStripMenuItem TsmItemConfigRepository;
         private System.Windows.Forms.PictureBox PicStatRepOfline;
         private System.Windows.Forms.PictureBox PicStatRepOnline;
+        private System.Windows.Forms.ToolStripMenuItem TsmItemConfigProviderObj;
+        private System.Windows.Forms.ToolStripMenuItem TsmItemConfigProviderMon;
+        private System.Windows.Forms.ToolStripMenuItem TsmItemConfigParam;
     }
 }
 

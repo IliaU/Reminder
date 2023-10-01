@@ -10,9 +10,9 @@ using System.IO;
 namespace Common
 {
     /// <summary>
-    /// Класс для работы с репозиторием
+    /// Класс для работы с провайдером
     /// </summary>
-    public class RepositoryFarm
+    public class ProviderFarm
     {
         /// <summary>
         /// Корневая директория нашего плагина
@@ -28,7 +28,7 @@ namespace Common
         /// </summary>
         public static string FolderForPlugin
         {
-            get { return "RepositoryPlg"; }
+            get { return "ProviderPlg"; }
             private set { }
         }
 
@@ -37,93 +37,133 @@ namespace Common
         /// </summary>
         public static string PathForPlugin
         {
-            get { return string.Format("{0}\\RepositoryPlg", ParentDirectoryForPlugin); }
+            get { return string.Format("{0}\\ProviderPlg", ParentDirectoryForPlugin); }
             private set { }
         }
 
         /// <summary>
-        /// Получаем список доступных репозиториев
+        /// Получаем список доступных провайдеров
         /// </summary>
-        /// <returns>Список имён доступных репозиториев</returns>
-        public static List<PluginClassElement> ListRepositoryName;
+        /// <returns>Список имён доступных провайдеров</returns>
+        public static List<PluginClassElement> ListProviderName;
 
         /// <summary>
-        /// Текущий репозиторий
+        /// Текущий провайдер c объектами нашей инфраструктуры используется как база с структурой предприятия и содержит списки компонент которые надо мониторить
         /// </summary>
-        public static Repository CurRepository;
-
+        public static Provider CurProviderObj;
 
         /// <summary>
-        /// Событие изменения текущего универсального репозитория
+        /// Текущий провайдер c объектами с логами мониторинга в который складиваем информацию и на основе которой происходит мониторинг необходимых объектов. 
+        /// Например CurProviderObj лежит список хостов а в  этом провайдере лажал сами логи по доступности их. Это позволяет разнести нагрузку по разными нодам.
+        /// А рнепозиторий занят всеми задачами по связыванию много кластерного вычесления и обслуживанием этой задачи
         /// </summary>
-        public static event EventHandler<EventRepositoryFarm> onEventSetup;
+        public static Provider CurProviderMon;
+
+        /// <summary>
+        /// Событие изменения текущего универсального провайдера для объектов
+        /// </summary>
+        public static event EventHandler<EventProviderFarm> onEventSetupObj;
+
+        /// <summary>
+        /// Событие изменения текущего универсального провайдера для мониторинга
+        /// </summary>
+        public static event EventHandler<EventProviderFarm> onEventSetupMon;
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        public RepositoryFarm()
+        public ProviderFarm()
         {
             try
             {
-                if (ListRepositoryName == null)
+                if (ListProviderName == null)
                 {
-                    Log.EventSave("Инициализация классов репозитория", GetType().Name, EventEn.Message);
-                    GetListRepositoryName();
+                    Log.EventSave("Инициализация классов провайдеров", GetType().Name, EventEn.Message);
+                    GetListProviderName();
 
                     // Установка текущего репозитория по умолчанию
-                    //string dd = ListRepositoryName.Find(x => x == Config.RepositoryName);
-                    //if (!string.IsNullOrWhiteSpace(dd)) CurRepository = CreateNewRepository("DisplayDSP840");
+                    //string dd = ListProviderName.Find(x => x == Config.ProviderName);
+                    //if (!string.IsNullOrWhiteSpace(dd)) CurProvider = CreateNewProvider("DisplayDSP840");
                 }
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.RepositoryFarm", this.GetType().FullName), EventEn.Error);
+                Log.EventSave(ae.Message, string.Format("{0}.ProviderFarm", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
 
         /// <summary>
-        /// Установка текущего репозитория
+        /// Установка текущего провайдера
         /// </summary>
-        /// <param name="NewRep">Репозиторий который установить по умолчанию</param>
+        /// <param name="NewPrv">Провайдер который установить по умолчанию для базы с объектами</param>
         /// <param name="WriteLog">Запись в лог</param>
-        public static void SetCurrentRepository(Repository NewRep, bool WriteLog)
+        public static void SetCurrentProviderObj(Provider NewPrv, bool WriteLog)
         {
             try
             {
-                CurRepository = NewRep;
+                CurProviderObj = NewPrv;
 
                 // Собственно обработка события
-                EventRepositoryFarm myArg = new EventRepositoryFarm(NewRep);
-                if (onEventSetup != null)
+                EventProviderFarm myArg = new EventProviderFarm(NewPrv);
+                if (onEventSetupObj != null)
                 {
-                    onEventSetup.Invoke(NewRep, myArg);
+                    onEventSetupObj.Invoke(NewPrv, myArg);
                 }
 
                 // Логируем изменение подключения
-                if (WriteLog) Log.EventSave(string.Format("Пользователь настроил новый репозиторий: {0} ({1})", NewRep.PrintConnectionString(), NewRep.PlugInType), "RepositoryFarm", EventEn.Message);
+                if (WriteLog) Log.EventSave(string.Format("Пользователь настроил провайдер для базы объектов: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "RepositoryFarm.SetCurrentRepository", EventEn.Error);
+                Log.EventSave(ae.Message, "ProviderFarm.SetCurrentProviderObj", EventEn.Error);
                 throw ae;
             }
         }
 
         /// <summary>
-        /// Получаем список репозиториев
+        /// Установка текущего провайдера
         /// </summary>
-        /// <returns>Список доступных репозиториев</returns>
-        public static List<PluginClassElement> GetListRepositoryName()
+        /// <param name="NewPrv">Провайдер который установить по умолчанию для базы мониторинга</param>
+        /// <param name="WriteLog">Запись в лог</param>
+        public static void SetCurrentProviderMon(Provider NewPrv, bool WriteLog)
+        {
+            try
+            {
+                CurProviderMon = NewPrv;
+
+                // Собственно обработка события
+                EventProviderFarm myArg = new EventProviderFarm(NewPrv);
+                if (onEventSetupMon != null)
+                {
+                    onEventSetupMon.Invoke(NewPrv, myArg);
+                }
+
+                // Логируем изменение подключения
+                if (WriteLog) Log.EventSave(string.Format("Пользователь настроил провайдер для базы мониторинга: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, "ProviderFarm.SetCurrentProviderMon", EventEn.Error);
+                throw ae;
+            }
+        }
+
+        /// <summary>
+        /// Получаем список провайдеров
+        /// </summary>
+        /// <returns>Список доступных провайдеров</returns>
+        public static List<PluginClassElement> GetListProviderName()
         {
             try
             {
                 // Если список ещё не получали то получаем его
-                if (ListRepositoryName == null)
+                if (ListProviderName == null)
                 {
-                    ListRepositoryName = new List<PluginClassElement>();
+                    ListProviderName = new List<PluginClassElement>();
 
                     // Проверяем наличие папки и если её нет то создаём её
                     if (!Directory.Exists(PathForPlugin)) Directory.CreateDirectory(PathForPlugin);
@@ -142,7 +182,7 @@ namespace Common
 
                             foreach (Type i in item.GetInterfaces())
                             {
-                                string Search = "RepositoryPlg.RepositoryI";
+                                string Search = "ProviderPlg.ProviderI";
                                 if (i.FullName.Length > Search.Length && i.FullName.Substring(i.FullName.Length - Search.Length) == Search)
                                 {
                                     flagI = true;
@@ -155,7 +195,7 @@ namespace Common
                             bool flagB = false;
                             foreach (MemberInfo mi in item.GetMembers())
                             {
-                                string Search = "RepositoryPlg.RepositoryBase";
+                                string Search = "ProviderPlg.ProviderBase";
                                 if (mi.DeclaringType.FullName.Length > Search.Length && mi.DeclaringType.FullName.Substring(mi.DeclaringType.FullName.Length - Search.Length) == Search)
                                 {
                                     flagB = true;
@@ -175,7 +215,7 @@ namespace Common
                                 // получаем параметры конструктора  
                                 ParameterInfo[] parameters = ctor.GetParameters();
 
-                                
+
                                 // если в этом конструктаре должно быть несколько параметров
                                 if (parameters.Length == 1)
                                 {
@@ -184,7 +224,7 @@ namespace Common
 
                                     flag1 = flag;
                                 }
-                                
+
 
                                 // Проверяем конструктор для создания документа пустого по умолчанию
                                 if (parameters.Length == 0) flag0 = true;
@@ -192,45 +232,45 @@ namespace Common
                             if (!flag1) continue;
                             if (!flag0) continue;
 
-                            ListRepositoryName.Add(new PluginClassElement(item.Name, item, null));
+                            ListProviderName.Add(new PluginClassElement(item.Name, item, null));
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "RepositoryFarm.GetListRepositoryName", EventEn.Error);
+                Log.EventSave(ex.Message, "ProviderFarm.GetListProviderName", EventEn.Error);
             }
 
-            return ListRepositoryName;
+            return ListProviderName;
         }
 
         /// <summary>
-        /// Создание репозитория определённого типа с параметрами из конфига
+        /// Создание провайдера определённого типа с параметрами из конфига
         /// </summary>
-        /// <param name="PlugInType">Имя плагина определяющего тип репозитория который создаём</param>
-        /// <param name="ConnectionString">Строка подключения к репозиторию</param>
-        /// <returns>Возвращаем репозиторий</returns>
-        public static Repository CreateNewRepository(string PlugInType, string ConnectionString)
+        /// <param name="PlugInType">Имя плагина определяющего тип провайдера который создаём</param>
+        /// <param name="ConnectionString">Строка подключения к провайдеру</param>
+        /// <returns>Возвращаем провайдер</returns>
+        public static Provider CreateNewProvider(string PlugInType, string ConnectionString)
         {
-            Repository rez = null;
+            Provider rez = null;
             try
             {
                 // Если списка репозиториев ещё нет то создаём его
-                GetListRepositoryName();
+                GetListProviderName();
 
 
                 // Проверяем наличие существование этого типа плагина
-                foreach (PluginClassElement item in ListRepositoryName)
+                foreach (PluginClassElement item in ListProviderName)
                 {
                     if (item.Name == PlugInType.Trim())
                     {
                         // Создаём экземпляр объекта
                         object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
-                        rez = (Repository)Activator.CreateInstance(item.EmptTyp, targ);
+                        rez = (Provider)Activator.CreateInstance(item.EmptTyp, targ);
 
                         // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
-                        //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
+                        //ProviderPlg.Lib.ProviderBase.CrossLink CrLink = new ProviderPlg.Lib.ProviderBase.CrossLink(rez);
 
                         break;
                     }
@@ -240,37 +280,37 @@ namespace Common
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewRepository", EventEn.Error);
+                Log.EventSave(ex.Message, "ProviderFarm.CreateNewProvider", EventEn.Error);
             }
 
             return rez;
         }
 
         /// <summary>
-        /// Создание репозитория определённого типа с параметрами из конфига
+        /// Создание провайдера определённого типа с параметрами из конфига
         /// </summary>
-        /// <param name="PlugInType">Имя плагина определяющего тип репозитория который создаём</param>
-        /// <returns>Возвращаем репозиторий</returns>
-        public static Repository CreateNewRepository(string PlugInType)
+        /// <param name="PlugInType">Имя плагина определяющего тип провайдера который создаём</param>
+        /// <returns>Возвращаем провайдер</returns>
+        public static Provider CreateNewProvider(string PlugInType)
         {
-            Repository rez = null;
+            Provider rez = null;
             try
             {
                 // Если списка репозиториев ещё нет то создаём его
-                GetListRepositoryName();
+                GetListProviderName();
 
 
                 // Проверяем наличие существование этого типа плагина
-                foreach (PluginClassElement item in ListRepositoryName)
+                foreach (PluginClassElement item in ListProviderName)
                 {
                     if (item.Name == PlugInType.Trim())
                     {
                         // Создаём экземпляр объекта
                         //object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
-                        rez = (Repository)Activator.CreateInstance(item.EmptTyp);//, targ);
+                        rez = (Provider)Activator.CreateInstance(item.EmptTyp);//, targ);
 
                         // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
-                        //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
+                        //ProviderPlg.Lib.ProviderBase.CrossLink CrLink = new ProviderPlg.Lib.ProviderBase.CrossLink(rez);
 
                         break;
                     }
@@ -280,11 +320,10 @@ namespace Common
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewRepository", EventEn.Error);
+                Log.EventSave(ex.Message, "ProviderFarm.CreateNewProvider", EventEn.Error);
             }
 
             return rez;
         }
-
     }
 }

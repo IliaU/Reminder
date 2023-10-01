@@ -650,5 +650,74 @@ namespace Reminder
                 Log.EventSave(ae.Message, string.Format("{0}.TsmItemConfigRepository_Click", this.GetType().FullName), EventEn.Error, true, true);
             }
         }
+
+        // Пользователь решил настроить провайдер базы объектов
+        private void TsmItemConfigProviderObj_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Проверяем на наличие подключения к репозиотрию если его нет то некуда сохранять строку подключения и неоткуда её брать
+                if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                {
+                    using (FProviderSetup Frm = new FProviderSetup(false))
+                    {
+                        Frm.ShowDialog();
+                    }
+                }
+                else throw new ApplicationException("Нет подключения к репозиторию по этой причине нет возможности сделать настройку провайдера");
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе TsmItemConfigProviderObj_Click:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.TsmItemConfigProviderObj_Click", this.GetType().FullName), EventEn.Error, true, true);
+            }
+        }
+
+        // Пользователь решил настроить провайдер базы мониторинга
+        private void TsmItemConfigProviderMon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Проверяем на наличие подключения к репозиотрию если его нет то некуда сохранять строку подключения и неоткуда её брать
+                if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                {
+                    using (FProviderSetup Frm = new FProviderSetup(true))
+                    {
+                        Frm.ShowDialog();
+                    }
+                }
+                else throw new ApplicationException("Нет подключения к репозиторию по этой причине нет возможности сделать настройку провайдера");
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе TsmItemConfigProviderMon_Click:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.TsmItemConfigProviderMon_Click", this.GetType().FullName), EventEn.Error, true, true);
+            }
+        }
+
+        // Пользователь настраивает дополнительные параметры программы
+        private void TsmItemConfigParam_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Проверяем на наличие подключения к репозиотрию если его нет то некуда сохранять строку подключения и неоткуда её брать
+                if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                {
+                    using (FSetup Frm = new FSetup())
+                    {
+                        Frm.ShowDialog();
+                    }
+                }
+                else throw new ApplicationException("Нет подключения к репозиторию по этой причине нет возможности сделать настройку провайдера");
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе TsmItemConfigParam_Click:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.TsmItemConfigParam_Click", this.GetType().FullName), EventEn.Error, true, true);
+            }
+        }
+
     }
 }

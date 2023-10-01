@@ -20,7 +20,7 @@ namespace Reminder
             try
             {
                 bool oneOnlyProg;
-                Mutex m = new Mutex(true, "AlgoritmPrizm", out oneOnlyProg);
+                Mutex m = new Mutex(true, "Reminder", out oneOnlyProg);
                 if (oneOnlyProg == true) // Если процесс существует надо его убить
                 {
                     // Подключаем логирование
@@ -28,6 +28,9 @@ namespace Reminder
 
                     // Подключаем конфиг
                     Config Cnf = new Config();
+
+                    // Запускаем объект наших провайдеров
+                    ProviderFarm PrvF = new ProviderFarm();
 
                     // Создаём Ферму с пулами и с доступными элементами для них
                     IoFarm IoF = new IoFarm();

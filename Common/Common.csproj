@@ -43,11 +43,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventConvertor.cs" />
+    <Compile Include="EventProviderFarm.cs" />
     <Compile Include="EventRepositoryFarm.cs" />
+    <Compile Include="Param.cs" />
+    <Compile Include="ParamList.cs" />
+    <Compile Include="ParamPlg\EventParamAdd.cs" />
+    <Compile Include="ParamPlg\EventParamDelete.cs" />
+    <Compile Include="ParamPlg\EventParamUpdate.cs" />
     <Compile Include="ParamPlg\ParamBase.cs" />
+    <Compile Include="ParamPlg\ParamListBase.cs" />
+    <Compile Include="ParamPlg\ParamListBaseEnumerator.cs" />
+    <Compile Include="ParamPlg\ParamListI.cs" />
     <Compile Include="ParamPlg\ParamTransferEventI.cs" />
     <Compile Include="ParamPlg\ParamTransferSqlI.cs" />
     <Compile Include="ParamPlg\ParamTransferFlagI.cs" />
+    <Compile Include="Provider.cs" />
+    <Compile Include="ProviderFarm.cs" />
+    <Compile Include="ProviderPlg\ProviderBase.cs" />
+    <Compile Include="ProviderPlg\ProviderI.cs" />
     <Compile Include="Segment.cs" />
     <Compile Include="Io.cs" />
     <Compile Include="IoFarm.cs" />

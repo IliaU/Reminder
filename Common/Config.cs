@@ -40,7 +40,7 @@ namespace Common
         /// <summary>
         /// Отображение всплывающих подсказок
         /// </summary>
-        private static bool _ShowNotification = true;
+        private static bool _ShowNotification = false;
 
         /// <summary>
         /// Корневой элемент плагинов
