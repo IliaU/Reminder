@@ -73,6 +73,32 @@ namespace Common
         public static bool IsRunThrCreateCurentPulList { get; private set; } = false;
 
         /// <summary>
+        /// Конструктор
+        /// </summary>
+        public ProgramStatus()
+        {
+            try
+            {
+                // Установка текущего провайдера для мониторинга
+                ProviderFarm.SetCurrentProviderMon(RepositoryFarm.GetProvider(true), true);
+
+                // Установка текущего провайдера для базы с обьектами
+                ProviderFarm.SetCurrentProviderObj(RepositoryFarm.GetProvider(false), true);
+
+                // Подписка на событие изменения провайдера который обслуживает мониторинг
+                ProviderFarm.onEventSetupMon += ProviderFarm_onEventSetupMon;
+                // Подписка на событие изменения провайдера который обслуживает базу объектов
+                ProviderFarm.onEventSetupObj += ProviderFarm_onEventSetupObj;
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.ProgramStatus", this.GetType().FullName), EventEn.Error);
+                throw ae;
+            }
+        }
+
+        /// <summary>
         /// Процесс создания и запуска процессов в наших пулах с плагинами
         /// </summary>
         public static void CreateCurentPulList()
@@ -179,75 +205,112 @@ namespace Common
             }
         }
 
-         /// <summary>
-         /// Остановка аснхронных процессов перед выключением всех потоков
-         /// </summary>
-         public static void Stop()
-         {
-             try
-             {
-                // Если список пулов создавали
+        /// <summary>
+        /// Остановка аснхронных процессов перед выключением всех потоков
+        /// </summary>
+        public static void Stop()
+        {
+            try
+            {
+            // Если список пулов создавали
+            if (CurentIoPulList != null)
+            {
+                IsRunThrCreateCurentPulList = false;
+
+                // Пробегаем по всем доступным объектам
+                foreach (IoList itemPul in CurentIoPulList)
+                {
+                    itemPul.StopCompileListing();
+                }
+            }
+            }
+            catch (Exception ex)
+            {
+            ApplicationException ae = new ApplicationException(string.Format("Упали при остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
+            Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+            throw ae;
+            }
+        }
+
+        /// <summary>
+        /// Остановка аснхронных процессов перед выключением всех потоков
+        /// </summary>
+        /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
+        public static void Join(bool Aborting)
+        {
+            try
+            {
+                // Если список пулов ещё не создавали то создаём его
                 if (CurentIoPulList != null)
                 {
-                    IsRunThrCreateCurentPulList = false;
+                    // Пробегаем по всем доступным объектам
+                    Stop();
+
+                    if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                    {
+                        // Фиксируем версию нашего приложения и его статус
+                        Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                        ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stoping.ToString());
+                    }
 
                     // Пробегаем по всем доступным объектам
                     foreach (IoList itemPul in CurentIoPulList)
                     {
-                        itemPul.StopCompileListing();
+                        itemPul.Join(Aborting);
+                    }
+
+                    if (ThrAStartCompileListing != null) ThrAStartCompileListing.Join();
+                    if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                    {
+                        // Фиксируем версию нашего приложения и его статус
+                        Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                        ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stop.ToString());
                     }
                 }
-             }
-             catch (Exception ex)
-             {
-                ApplicationException ae = new ApplicationException(string.Format("Упали при остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
-                throw ae;
-             }
-         }
+            }
+            catch (Exception ex)
+            {
+            ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
+            Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+            throw ae;
+            }
+        }
 
-         /// <summary>
-         /// Остановка аснхронных процессов перед выключением всех потоков
-         /// </summary>
-         /// <param name="Aborting">True если с прерывением всех процессов жёстное отклучение всех процессов</param>
-         public static void Join(bool Aborting)
-         {
-             try
-             {
-                 // Если список пулов ещё не создавали то создаём его
-                 if (CurentIoPulList != null)
-                 {
-                     // Пробегаем по всем доступным объектам
-                     Stop();
+        #region Подписки
 
-                     if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
-                     {
-                         // Фиксируем версию нашего приложения и его статус
-                         Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                         ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stoping.ToString());
-                     }
+        /// <summary>
+        /// Подписка на событие изменения провайдера который обслуживает мониторинг
+        /// </summary>
+        /// <param name="sender">обьект где произошло событие</param>
+        /// <param name="e">Провайдер</param>
+        private void ProviderFarm_onEventSetupMon(object sender, EventProviderFarm e)
+        {
+            try
+            {
+                ProviderFarm.SetCurrentProviderMon(e.Prv, true);
+            }
+            catch (Exception ex)
+            {
+                Log.EventSave(ex.Message, "RepositoryFarm.ProviderFarm_onEventSetupMon", EventEn.Error);
+            }
+        }
 
-                     // Пробегаем по всем доступным объектам
-                     foreach (IoList itemPul in CurentIoPulList)
-                     {
-                         itemPul.Join(Aborting);
-                     }
-
-                     if (ThrAStartCompileListing != null) ThrAStartCompileListing.Join();
-                     if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
-                     {
-                         // Фиксируем версию нашего приложения и его статус
-                         Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                         ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Stop.ToString());
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
-                throw ae;
-             }
-         }
+        /// <summary>
+        /// Подписка на событие изменения провайдера который обслуживает базу объектов
+        /// </summary>
+        /// <param name="sender">обьект где произошло событие</param>
+        /// <param name="e">Провайдер</param>
+        private void ProviderFarm_onEventSetupObj(object sender, EventProviderFarm e)
+        {
+            try
+            {
+                ProviderFarm.SetCurrentProviderMon(e.Prv, true);
+            }
+            catch (Exception ex)
+            {
+                Log.EventSave(ex.Message, "RepositoryFarm.ProviderFarm_onEventSetupObj", EventEn.Error);
+            }
+        }
+        #endregion
     }
 }

@@ -32,6 +32,9 @@ namespace Reminder
                     // Запускаем объект наших провайдеров
                     ProviderFarm PrvF = new ProviderFarm();
 
+                    // Запускаем подписки и настраиваем доп параметры
+                    ProgramStatus PrgStat = new ProgramStatus();
+
                     // Создаём Ферму с пулами и с доступными элементами для них
                     IoFarm IoF = new IoFarm();
                     IoListFarm ILisF = new IoListFarm();

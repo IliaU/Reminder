@@ -19,14 +19,6 @@ CREATE TABLE [io].[Config]
 	[ValBigInt0] [bigint] NULL,
 	[ValBit0] [bit] NULL,
 	[ValDate0] [date] NULL,
-	[ValDateTime0] [datetime] NULL,
-	[ValStr1] [varchar](max) NULL,
-	[ValFloat1] [float] NULL,
-	[ValInt1] [int] NULL,
-	[ValBigInt1] [bigint] NULL,
-	[ValBit1] [bit] NULL,
-	[ValDate1] [date] NULL,
-	[ValDateTime1] [datetime] NULL,
  CONSTRAINT [PK_Config] PRIMARY KEY CLUSTERED 
  (
 	[ParamSpace] ASC,

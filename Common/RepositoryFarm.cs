@@ -286,5 +286,47 @@ namespace Common
             return rez;
         }
 
+        /// <summary>
+        /// Получение провайдера из репозитория
+        /// </summary>
+        /// <param name="Mon">Если True то хотим получить по мониторингу, если false то по базе объектов</param>
+        /// <returns>Возвращаем провайдер</returns>
+        public static Provider GetProvider(bool Mon)
+        {
+            Provider rez = null;
+            try
+            {
+                if (CurRepository == null) throw new ApplicationException("Операцию выполнить не возможно. Не настроено подключение к репозиторию");
+
+                rez = ((RepositoryPlg.RepositoryI)CurRepository).SelectProvider(Mon);
+            }
+            catch (Exception ex)
+            {
+                Log.EventSave(ex.Message, "RepositoryFarm.GetProvider", EventEn.Error);
+                throw ex;
+            }
+
+            return rez;
+        }
+
+        /// <summary>
+        /// Получение провайдера из репозитория
+        /// </summary>
+        /// <param name="Mon">Провайдер который необходимо сохранить</param>
+        /// <param name="Mon">Если True то хотим получить по мониторингу, если false то по базе объектов</param>
+        public static void SetProvider(Provider Prv, bool Mon)
+        {
+            try
+            {
+                if (CurRepository == null) throw new ApplicationException("Операцию выполнить не возможно. Не настроено подключение к репозиторию");
+
+                ((RepositoryPlg.RepositoryI)CurRepository).SaveProvider(Prv, Mon);
+            }
+            catch (Exception ex)
+            {
+                Log.EventSave(ex.Message, "RepositoryFarm.SetProvider", EventEn.Error);
+                throw ex;
+            }
+        }
     }
 }

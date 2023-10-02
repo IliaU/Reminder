@@ -29,5 +29,19 @@ namespace Common.RepositoryPlg
         /// <param name="VersionNode">Версия воркера</param>
         /// <param name="LastStatusNode">Статус который получили от самой ноды</param>
         void NodeSetStatus(string MachineName, DateTime LastDateReflection, string VersionNode, string LastStatusNode);
+
+        /// <summary>
+        /// Сохранение провайдеоа в репозиторий
+        /// </summary>
+        /// <param name="Prv">Провайдер который сохраняем</param>
+        /// <param name="Mon">Какой тип провайдера для мониторинга или для объектов</param>
+        void SaveProvider(Provider Prv, bool Mon);
+
+        /// <summary>
+        /// Получение провайдера из базы
+        /// </summary>
+        /// <param name="Mon">Какой тип провайдера для мониторинга или для объектов</param>
+        /// <returns>Провайдер полученный из базы</returns>
+        Provider SelectProvider(bool Mon);
     }
 }

@@ -11,5 +11,6 @@ namespace Common.ProviderPlg
     /// </summary>
     public interface ProviderI
     {
+
     }
 }

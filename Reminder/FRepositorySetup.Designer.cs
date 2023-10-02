@@ -69,6 +69,7 @@ namespace Reminder
             // 
             // cmbBoxRepTyp
             // 
+            this.cmbBoxRepTyp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbBoxRepTyp.FormattingEnabled = true;
             this.cmbBoxRepTyp.Location = new System.Drawing.Point(172, 11);
             this.cmbBoxRepTyp.Margin = new System.Windows.Forms.Padding(4);
