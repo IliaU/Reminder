@@ -287,7 +287,7 @@ namespace Common
         {
             try
             {
-                ProviderFarm.SetCurrentProviderMon(e.Prv, true);
+                RepositoryFarm.SetProvider(e.Prv, true);
             }
             catch (Exception ex)
             {
@@ -304,7 +304,7 @@ namespace Common
         {
             try
             {
-                ProviderFarm.SetCurrentProviderMon(e.Prv, true);
+                RepositoryFarm.SetProvider(e.Prv, false);
             }
             catch (Exception ex)
             {

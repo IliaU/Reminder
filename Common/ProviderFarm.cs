@@ -113,7 +113,7 @@ namespace Common
                 }
 
                 // Логируем изменение подключения
-                if (WriteLog) Log.EventSave(string.Format("Пользователь настроил провайдер для базы объектов: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
+                if (WriteLog && NewPrv != null) Log.EventSave(string.Format("Пользователь настроил провайдер для базы объектов: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace Common
                 }
 
                 // Логируем изменение подключения
-                if (WriteLog) Log.EventSave(string.Format("Пользователь настроил провайдер для базы мониторинга: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
+                if (WriteLog && NewPrv !=null) Log.EventSave(string.Format("Пользователь настроил провайдер для базы мониторинга: {0} ({1})", NewPrv.PrintConnectionString(), NewPrv.PlugInType), "ProviderFarm", EventEn.Message);
             }
             catch (Exception ex)
             {
