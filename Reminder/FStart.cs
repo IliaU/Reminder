@@ -536,7 +536,7 @@ namespace Reminder
                                 }*/
 
                             // Вызов уведомления отображаем всплывающее окно только если комп не заблокирован
-                            if (AggMessage.Length > 0 && registered && Config.ShowNotification) this.m_notifyicon.ShowBalloonTip(5000, e.Evn.ToString(), AggMessage, ToolTipIcon.Info);
+                            if (e.ShowNotification && AggMessage.Length > 0 && registered && Config.ShowNotification) this.m_notifyicon.ShowBalloonTip(5000, e.Evn.ToString(), AggMessage, ToolTipIcon.Info);
                         }
                         else // Возникла ошибка результат чистим и выводим сообщение о том что есть серьёзнве ошибки
                         {
@@ -545,7 +545,7 @@ namespace Reminder
                         }
 
                         // Меняем иконку
-                        EventStatusIcon(e.Evn);
+                        EventStatusIcon(e);
                     }
                 }
             }
@@ -555,60 +555,63 @@ namespace Reminder
             }
         }
 
-        delegate void delig_Log_onEventStatusIcon(EventEn evn);
+        delegate void delig_Log_onEventStatusIcon(EventLog e);
         /// <summary>
         /// Событие происходящее с заданным интервалом в трейдах
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void EventStatusIcon(EventEn evn)
+        void EventStatusIcon(EventLog e)
         {
             if (this.InvokeRequired)
             {
                 //if (this.KeyCtrl) return;
                 delig_Log_onEventStatusIcon dl = new delig_Log_onEventStatusIcon(EventStatusIcon);
-                this.Invoke(dl, new object[] {evn});
+                this.Invoke(dl, new object[] {e});
             }
             else
             {
                 try
                 {
-                    lock (LockObj)
+                    if (e.ShowNotification)
                     {
-                        if (CustomizationFarm.CurCustomization != null && !isClosed)
+                        lock (LockObj)
                         {
-                            this.Icon = CustomizationFarm.CurCustomization.GetIconStatus(evn);
-                            m_notifyicon.Icon = this.Icon;
-                            Image Img = (Image)this.Icon.ToBitmap();
-                            this.toolStripStatusLabelIcon.Image = Img;
-
-                            // Меняем иконку
-                            switch (evn)
+                            if (CustomizationFarm.CurCustomization != null && !isClosed)
                             {
-                                case EventEn.Message:
-                                    break;
-                                case EventEn.Warning:
-                                    //this.tSSLabel.ForeColor = Color.Khaki;
-                                    this.tSSLabel.BackColor = Color.Khaki;
-                                    break;
-                                case EventEn.Error:
-                                    this.tSSLabel.BackColor = Color.Tomato;
-                                    break;
-                                case EventEn.FatalError:
-                                    this.tSSLabel.BackColor = Color.Red;
-                                    break;
-                                case EventEn.Empty:
-                                    break;
-                                default:
-                                    this.tSSLabel.BackColor = Color.Green;
-                                    break;
-                            }
+                                this.Icon = CustomizationFarm.CurCustomization.GetIconStatus(e.Evn);
+                                m_notifyicon.Icon = this.Icon;
+                                Image Img = (Image)this.Icon.ToBitmap();
+                                this.toolStripStatusLabelIcon.Image = Img;
 
-                            this.toolStripStatusLabelIcon.Text = String.Format("Последнее получение статуса произошло: {0}", DateTime.Now.ToString());
+                                // Меняем иконку
+                                switch (e.Evn)
+                                {
+                                    case EventEn.Message:
+                                        break;
+                                    case EventEn.Warning:
+                                        //this.tSSLabel.ForeColor = Color.Khaki;
+                                        this.tSSLabel.BackColor = Color.Khaki;
+                                        break;
+                                    case EventEn.Error:
+                                        this.tSSLabel.BackColor = Color.Tomato;
+                                        break;
+                                    case EventEn.FatalError:
+                                        this.tSSLabel.BackColor = Color.Red;
+                                        break;
+                                    case EventEn.Empty:
+                                        break;
+                                    default:
+                                        this.tSSLabel.BackColor = Color.Green;
+                                        break;
+                                }
+
+                                this.toolStripStatusLabelIcon.Text = String.Format("Последнее получение статуса произошло: {0}", DateTime.Now.ToString());
+                            }
+                            // Иногда исчезает подписка на двойной клик. Если вдруг исчезла, то подписываемся снова
+                            m_notifyicon.DoubleClick -= new EventHandler(DoubleClickIcon);
+                            m_notifyicon.DoubleClick += new EventHandler(DoubleClickIcon);
                         }
-                        // Иногда исчезает подписка на двойной клик. Если вдруг исчезла, то подписываемся снова
-                        m_notifyicon.DoubleClick -= new EventHandler(DoubleClickIcon);
-                        m_notifyicon.DoubleClick += new EventHandler(DoubleClickIcon);
                     }
                 }
                 catch (Exception ex)

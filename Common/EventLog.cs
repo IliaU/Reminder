@@ -44,7 +44,12 @@ namespace Common
         public DataTable Tab;
 
         /// <summary>
-        /// Конструктор собятия
+        /// Отображать во всплывающем окне трея или нет
+        /// </summary>
+        public bool ShowNotification;
+
+        /// <summary>
+        /// Конструктор события
         /// </summary>
         /// <param name="Message">Сообщение</param>
         /// <param name="Source">Источник</param>
@@ -52,7 +57,8 @@ namespace Common
         /// <param name="Tab">Передаём таблицу которая может иметь результат для основного окна и потенциально писать сообщения</param>
         /// <param name="isLog">Писать в лог</param>
         /// <param name="Show">Показывать пользователю</param>
-        public EventLog(string Message, string Source, EventEn Evn, DataTable Tab, bool isLog, bool Show) : this(Message, Source, Evn, isLog, Show)
+        /// <param name="ShowNotification">Отображать во всплывающем окне трея или нет</param>
+        public EventLog(string Message, string Source, EventEn Evn, DataTable Tab, bool isLog, bool Show, bool ShowNotification) : this(Message, Source, Evn, isLog, Show, ShowNotification)
         {
             try
             {
@@ -74,10 +80,14 @@ namespace Common
         /// <param name="Evn">Тип собятия</param>
         /// <param name="isLog">Писать в лог</param>
         /// <param name="Show">Показывать пользователю</param>
-        public EventLog(string Message, string Source, EventEn Evn, bool isLog, bool Show)
+        /// <param name="ShowNotification">Отображать во всплывающем окне трея или нет</param>
+        public EventLog(string Message, string Source, EventEn Evn, bool isLog, bool Show, bool ShowNotification)
         {
             try
             {
+
+                this.ShowNotification = ShowNotification;
+
                 this.Message = Message;
                 this.Source = Source;
                 this.Evn = Evn;

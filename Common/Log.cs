@@ -84,7 +84,7 @@ namespace Common
         /// <param name="evn">Тип события</param>
         public static void EventSave(string Message, string Source, EventEn evn)
         {
-            EventSave(File, Message, Source, evn, true, false);
+            EventSave(File, Message, Source, evn, true, false, false);
         }
 
         /// <summary>
@@ -95,9 +95,24 @@ namespace Common
         /// <param name="evn">Тип события</param>
         /// <param name="IsLog">Писать в лог или нет</param>
         /// <param name="Show">Отобразить сообщение пользователю или нет</param>
+        /// <param name="ShowNotification">Отображать во всплывающем окне трея или нет</param>
         public static void EventSave(string Message, string Source, EventEn evn, bool IsLog, bool Show)
         {
-            EventSave(File, Message, Source, evn, IsLog, Show);
+            EventSave(File, Message, Source, evn, IsLog, Show, false);
+        }
+
+        /// <summary>
+        /// Событие программы
+        /// </summary>
+        /// <param name="Message">Сообщение</param>
+        /// <param name="Source">Источник</param>
+        /// <param name="evn">Тип события</param>
+        /// <param name="IsLog">Писать в лог или нет</param>
+        /// <param name="Show">Отобразить сообщение пользователю или нет</param>
+        /// <param name="ShowNotification">Отображать во всплывающем окне трея или нет</param>
+        public static void EventSave(string Message, string Source, EventEn evn, bool IsLog, bool Show, bool ShowNotification)
+        {
+            EventSave(File, Message, Source, evn, IsLog, Show, ShowNotification);
         }
 
         /// <summary>
@@ -109,13 +124,14 @@ namespace Common
         /// <param name="evn">Тип события</param>
         /// <param name="IsLog">Писать в лог или нет</param>
         /// <param name="Show">Отобразить сообщение пользователю или нет</param>
-        public static void EventSave(string FileName, string Message, string Source, EventEn evn, bool IsLog, bool Show)
+        /// <param name="ShowNotification">Отображать во всплывающем окне трея или нет</param>
+        public static void EventSave(string FileName, string Message, string Source, EventEn evn, bool IsLog, bool Show, bool ShowNotification)
         {
             if (obj == null) throw new ApplicationException("Класс Log ещё не инициирован. Сначала запустите конструктор а потом используйте методы");
 
             lock (obj)
             {
-                EventLog myArg = new EventLog(Message, Source, evn, IsLog, Show);
+                EventLog myArg = new EventLog(Message, Source, evn, IsLog, Show, ShowNotification);
                 if (onEventLog != null)
                 {
                     onEventLog.Invoke(obj, myArg);
