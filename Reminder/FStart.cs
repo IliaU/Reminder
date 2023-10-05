@@ -103,7 +103,7 @@ namespace Reminder
         /// <param name="e"></param>
         private void ProgramStatus_onEventChangeStatus(object sender, EventChangeStatus e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -358,6 +358,19 @@ namespace Reminder
                         {
                             this.PicStatRepOnline.Visible = false;
                             this.PicStatRepOfline.Visible = true;
+                        }
+
+                        bool HashConnectPrvObj = (ProviderFarm.CurProviderObj == null ? false : ProviderFarm.CurProviderObj.HashConnect);
+                        bool HashConnectPrvMon = (ProviderFarm.CurProviderMon == null ? false : ProviderFarm.CurProviderMon.HashConnect);
+                        if (HashConnectPrvObj && HashConnectPrvMon)
+                        {
+                            this.PicStatPrvOnline.Visible = true;
+                            this.PicStatPrvOfline.Visible = false;
+                        }
+                        else
+                        {
+                            this.PicStatPrvOnline.Visible = false;
+                            this.PicStatPrvOfline.Visible = true;
                         }
 
                         if (e == null)

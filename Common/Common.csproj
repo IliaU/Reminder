@@ -118,6 +118,8 @@
     <Content Include="Resource\Icon-FE.ico" />
     <Content Include="Resource\Icon-S.ico" />
     <Content Include="Resource\Icon-W.ico" />
+    <Content Include="Resource\PRV-Ofline.jpg" />
+    <Content Include="Resource\PRV-Online.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

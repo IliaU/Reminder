@@ -33,21 +33,25 @@ namespace Reminder
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.TsmItemConfig = new System.Windows.Forms.ToolStripMenuItem();
             this.TsmItemConfigRepository = new System.Windows.Forms.ToolStripMenuItem();
+            this.TsmItemConfigProviderObj = new System.Windows.Forms.ToolStripMenuItem();
+            this.TsmItemConfigProviderMon = new System.Windows.Forms.ToolStripMenuItem();
+            this.TsmItemConfigParam = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelIcon = new System.Windows.Forms.ToolStripStatusLabel();
             this.tSSLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.pnlTopRight = new System.Windows.Forms.Panel();
+            this.PicStatPrvOfline = new System.Windows.Forms.PictureBox();
+            this.PicStatPrvOnline = new System.Windows.Forms.PictureBox();
             this.PicStatRepOfline = new System.Windows.Forms.PictureBox();
             this.PicStatRepOnline = new System.Windows.Forms.PictureBox();
             this.pnlFill = new System.Windows.Forms.Panel();
-            this.TsmItemConfigProviderObj = new System.Windows.Forms.ToolStripMenuItem();
-            this.TsmItemConfigProviderMon = new System.Windows.Forms.ToolStripMenuItem();
-            this.TsmItemConfigParam = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.pnlTop.SuspendLayout();
             this.pnlTopRight.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PicStatPrvOfline)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PicStatPrvOnline)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicStatRepOfline)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicStatRepOnline)).BeginInit();
             this.SuspendLayout();
@@ -60,7 +64,7 @@ namespace Reminder
             this.TsmItemConfig});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(628, 36);
+            this.menuStrip1.Size = new System.Drawing.Size(682, 36);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -81,6 +85,27 @@ namespace Reminder
             this.TsmItemConfigRepository.Size = new System.Drawing.Size(392, 26);
             this.TsmItemConfigRepository.Text = "Настройка репозитория";
             this.TsmItemConfigRepository.Click += new System.EventHandler(this.TsmItemConfigRepository_Click);
+            // 
+            // TsmItemConfigProviderObj
+            // 
+            this.TsmItemConfigProviderObj.Name = "TsmItemConfigProviderObj";
+            this.TsmItemConfigProviderObj.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigProviderObj.Text = "Настройка провайдера объектов";
+            this.TsmItemConfigProviderObj.Click += new System.EventHandler(this.TsmItemConfigProviderObj_Click);
+            // 
+            // TsmItemConfigProviderMon
+            // 
+            this.TsmItemConfigProviderMon.Name = "TsmItemConfigProviderMon";
+            this.TsmItemConfigProviderMon.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigProviderMon.Text = "Настройка провайдера мониторинга";
+            this.TsmItemConfigProviderMon.Click += new System.EventHandler(this.TsmItemConfigProviderMon_Click);
+            // 
+            // TsmItemConfigParam
+            // 
+            this.TsmItemConfigParam.Name = "TsmItemConfigParam";
+            this.TsmItemConfigParam.Size = new System.Drawing.Size(392, 26);
+            this.TsmItemConfigParam.Text = "Настройка других параметров программы";
+            this.TsmItemConfigParam.Click += new System.EventHandler(this.TsmItemConfigParam_Click);
             // 
             // statusStrip
             // 
@@ -118,13 +143,39 @@ namespace Reminder
             // 
             // pnlTopRight
             // 
+            this.pnlTopRight.Controls.Add(this.PicStatPrvOfline);
+            this.pnlTopRight.Controls.Add(this.PicStatPrvOnline);
             this.pnlTopRight.Controls.Add(this.PicStatRepOfline);
             this.pnlTopRight.Controls.Add(this.PicStatRepOnline);
             this.pnlTopRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlTopRight.Location = new System.Drawing.Point(628, 0);
+            this.pnlTopRight.Location = new System.Drawing.Point(682, 0);
             this.pnlTopRight.Name = "pnlTopRight";
-            this.pnlTopRight.Size = new System.Drawing.Size(172, 36);
+            this.pnlTopRight.Size = new System.Drawing.Size(118, 36);
             this.pnlTopRight.TabIndex = 0;
+            // 
+            // PicStatPrvOfline
+            // 
+            this.PicStatPrvOfline.Dock = System.Windows.Forms.DockStyle.Left;
+            this.PicStatPrvOfline.Image = ((System.Drawing.Image)(resources.GetObject("PicStatPrvOfline.Image")));
+            this.PicStatPrvOfline.Location = new System.Drawing.Point(152, 0);
+            this.PicStatPrvOfline.Name = "PicStatPrvOfline";
+            this.PicStatPrvOfline.Size = new System.Drawing.Size(64, 36);
+            this.PicStatPrvOfline.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PicStatPrvOfline.TabIndex = 4;
+            this.PicStatPrvOfline.TabStop = false;
+            this.PicStatPrvOfline.Visible = false;
+            // 
+            // PicStatPrvOnline
+            // 
+            this.PicStatPrvOnline.Dock = System.Windows.Forms.DockStyle.Left;
+            this.PicStatPrvOnline.Image = ((System.Drawing.Image)(resources.GetObject("PicStatPrvOnline.Image")));
+            this.PicStatPrvOnline.Location = new System.Drawing.Point(88, 0);
+            this.PicStatPrvOnline.Name = "PicStatPrvOnline";
+            this.PicStatPrvOnline.Size = new System.Drawing.Size(64, 36);
+            this.PicStatPrvOnline.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PicStatPrvOnline.TabIndex = 3;
+            this.PicStatPrvOnline.TabStop = false;
+            this.PicStatPrvOnline.Visible = false;
             // 
             // PicStatRepOfline
             // 
@@ -158,27 +209,6 @@ namespace Reminder
             this.pnlFill.Size = new System.Drawing.Size(800, 490);
             this.pnlFill.TabIndex = 3;
             // 
-            // TsmItemConfigProviderObj
-            // 
-            this.TsmItemConfigProviderObj.Name = "TsmItemConfigProviderObj";
-            this.TsmItemConfigProviderObj.Size = new System.Drawing.Size(392, 26);
-            this.TsmItemConfigProviderObj.Text = "Настройка провайдера объектов";
-            this.TsmItemConfigProviderObj.Click += new System.EventHandler(this.TsmItemConfigProviderObj_Click);
-            // 
-            // TsmItemConfigProviderMon
-            // 
-            this.TsmItemConfigProviderMon.Name = "TsmItemConfigProviderMon";
-            this.TsmItemConfigProviderMon.Size = new System.Drawing.Size(392, 26);
-            this.TsmItemConfigProviderMon.Text = "Настройка провайдера мониторинга";
-            this.TsmItemConfigProviderMon.Click += new System.EventHandler(this.TsmItemConfigProviderMon_Click);
-            // 
-            // TsmItemConfigParam
-            // 
-            this.TsmItemConfigParam.Name = "TsmItemConfigParam";
-            this.TsmItemConfigParam.Size = new System.Drawing.Size(392, 26);
-            this.TsmItemConfigParam.Text = "Настройка других параметров программы";
-            this.TsmItemConfigParam.Click += new System.EventHandler(this.TsmItemConfigParam_Click);
-            // 
             // FStart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -202,6 +232,8 @@ namespace Reminder
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.pnlTopRight.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PicStatPrvOfline)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PicStatPrvOnline)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicStatRepOfline)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicStatRepOnline)).EndInit();
             this.ResumeLayout(false);
@@ -225,6 +257,8 @@ namespace Reminder
         private System.Windows.Forms.ToolStripMenuItem TsmItemConfigProviderObj;
         private System.Windows.Forms.ToolStripMenuItem TsmItemConfigProviderMon;
         private System.Windows.Forms.ToolStripMenuItem TsmItemConfigParam;
+        private System.Windows.Forms.PictureBox PicStatPrvOnline;
+        private System.Windows.Forms.PictureBox PicStatPrvOfline;
     }
 }
 
