@@ -9,7 +9,7 @@ namespace Common
     /// <summary>
     /// К какой  категории относится нода. По этому параметру определяется как резервировать процесс для отказоустойчивости.
     /// </summary>
-    public enum TaskSpace
+    public enum IoTaskSpace
     {
         /// <summary>
         /// Не определена. Резервирования нет.

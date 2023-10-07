@@ -98,7 +98,10 @@ namespace Common.IoPlg
 
             #region Param (public get; protected set;)
 
-
+            /// <summary>
+            /// Список методов нашего класса которые ему доступны
+            /// </summary>
+            public List<string> ClassMethods { get; protected set; }
 
             #endregion
 
@@ -166,6 +169,7 @@ namespace Common.IoPlg
                 {
                     this.FolderName = FolderName;
                     this.PluginFileName = PluginFileName;
+                    this.ClassMethods = new List<string>();
                 }
                 catch (Exception ex)
                 {

@@ -38,9 +38,10 @@ namespace Reminder
                     // Создаём Ферму с пулами и с доступными элементами для них
                     IoFarm IoF = new IoFarm();
                     IoListFarm ILisF = new IoListFarm();
+
                     //IoFarm.CreateNewIo(IoFarm.ListIoName[0].Items[0]);
                     //IoListFarm.CreateNewIoList(IoListFarm.ListIoListName[0].Items[0]);
-                    ProgramStatus.CreateCurentPulList();        // Запускаем объект который содержит нужные пуля со спписком объектов внутри пулов чтобы пул был того же типа как и объекты которые для него
+                    ProgramStatus.CreateCurentPulList();        // Запускаем объект который содержит нужные пулы со спписком объектов внутри пулов чтобы пул был того же типа как и объекты которые для него
                     ProgramStatus.StartCompileListing();        // Запуск асинхронного процесса мониторинга ноды
 
                     // Тест плагинной технологии

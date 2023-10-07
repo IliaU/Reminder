@@ -43,5 +43,12 @@ namespace Common.RepositoryPlg
         /// <param name="Mon">Какой тип провайдера для мониторинга или для объектов</param>
         /// <returns>Провайдер полученный из базы</returns>
         Provider SelectProvider(bool Mon);
+
+        /// <summary>
+        /// Получение актуального задания на основе фильтра который относится к текущей ноде
+        /// </summary>
+        /// <param name="DraftTask"></param>
+        /// <returns></returns>
+        IoTask GetListinerTask(IoTaskFilter DraftTask);
     }
 }

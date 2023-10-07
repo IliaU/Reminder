@@ -16,6 +16,5 @@ namespace Common.IoPlg
         /// </summary>
         /// <returns>Возвращаем статус проверки</returns>
         EventEn SetStatusPul();
-
     }
 }

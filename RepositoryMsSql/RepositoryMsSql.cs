@@ -382,12 +382,16 @@ namespace RepositoryMsSql
             catch (SqlException ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении статуса ноды в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.PulBasicSetStatus", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
             catch (Exception ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении статуса ноды в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.PulBasicSetStatus", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
         }
 
@@ -458,12 +462,16 @@ namespace RepositoryMsSql
             catch (SqlException ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "NodeSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении статуса ноды в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.NodeSetStatus", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
             catch (Exception ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "NodeSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении статуса ноды в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.NodeSetStatus", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
         }
 
@@ -578,10 +586,19 @@ namespace RepositoryMsSql
                     con.Close();
                 }
             }
+            catch (SqlException ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении провайдера в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.SaveProvider", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
             catch (Exception ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении провайдера в репозиторий:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.SaveProvider", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
         }
 
@@ -594,7 +611,7 @@ namespace RepositoryMsSql
         {
             Provider rez = null;
 
-            
+
             string SQL = "[io].[SelectConfig]";
             try
             {
@@ -667,7 +684,7 @@ namespace RepositoryMsSql
                                             break;
                                         default:
                                             break;
-                                    } 
+                                    }
                                 }
 
                                 // Проверяем все необходимы параметры
@@ -685,12 +702,103 @@ namespace RepositoryMsSql
                     con.Close();
                 }
             }
+            catch (SqlException ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при получении провайдера из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.SelectProvider", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
             catch (Exception ex)
             {
                 // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
-                if (Config.Trace) base.EventSave(string.Format(@"Ошибка при проверке подключения:""{0}""", ex.Message), "PulBasicSetStatus", EventEn.Error, true, false);
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при получении провайдера из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.SelectProvider", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
             }
-            
+
+            return rez;
+        }
+
+        /// <summary>
+        /// Получение актуального задания на основе фильтра который относится к текущей ноде
+        /// </summary>
+        /// <param name="DraftTask"></param>
+        /// <returns></returns>
+        public IoTask GetListinerTask(IoTaskFilter DraftTask)
+        {
+            IoTask rez=null;
+
+            string SQL = "[io].[NodeSetStatus]";
+            try
+            {/*
+                // Проверка подключения
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+
+                    using (SqlCommand com = new SqlCommand(SQL, con))
+                    {
+                        com.CommandTimeout = 900;  // 15 минут
+                        com.CommandType = CommandType.StoredProcedure;
+                        //
+                        //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
+                        //PIdOut.Direction = ParameterDirection.ReturnValue;
+                        //com.Parameters.Add(PIdOut);
+                        //
+                        //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
+                        //PId.Direction = ParameterDirection.Input;
+                        //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
+                        //com.Parameters.Add(PId);
+                        //
+                        SqlParameter PMachineName = new SqlParameter("@MachineName", SqlDbType.VarChar, 100);
+                        PMachineName.Direction = ParameterDirection.Input;
+                        PMachineName.Value = MachineName;
+                        com.Parameters.Add(PMachineName);
+                        //
+                        SqlParameter PLastDateReflection = new SqlParameter("@LastDateReflection", SqlDbType.DateTime);
+                        PLastDateReflection.Direction = ParameterDirection.Input;
+                        PLastDateReflection.Value = LastDateReflection;
+                        com.Parameters.Add(PLastDateReflection);
+                        //
+                        SqlParameter PVersionPul = new SqlParameter("@VersionNode", SqlDbType.VarChar, 50);
+                        PVersionPul.Direction = ParameterDirection.Input;
+                        PVersionPul.Value = VersionNode;
+                        com.Parameters.Add(PVersionPul);
+                        //
+                        SqlParameter PLastStatusCustom = new SqlParameter("@LastStatusNode", SqlDbType.VarChar, 50);
+                        PLastStatusCustom.Direction = ParameterDirection.Input;
+                        PLastStatusCustom.Value = LastStatusNode;
+                        com.Parameters.Add(PLastStatusCustom);
+
+                        // Строим строку которую воткнём в дамп в случае падения
+                        SQL = GetStringPrintPar(com);
+
+                        // Запускаем процедуру
+                        com.ExecuteNonQuery();
+
+                        // Получаем идентификатор товара
+                        //rez = int.Parse(PIdOut.Value.ToString());
+                    }
+
+                    con.Close();
+                }
+                */
+            }
+            catch (SqlException ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при чтении задания из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.GetListinerTask", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при чтении задания из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.GetListinerTask", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
 
             return rez;
         }

@@ -12,24 +12,26 @@ namespace IoSystem
     /// <summary>
     /// Класс представляет из себя пулл с обектами
     /// </summary>
-    public class IoSystemList : IoList, Common.IoPlg.IoListI
+    public class IoHost : IoList, Common.IoPlg.IoListI
     {
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="PlugInType">Тип палгина - this.GetType().FullName</param>
         /// <param name="VersionPlg">Версия - плагина</param>
-        public IoSystemList() : base(Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        public IoHost() : base(Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
         {
             try
             {
                 //Log.EventSave("Плагин лугойла", "dd", EventEn.Message);
                 //this.EventSave("Плагин лугойла yfcktljdfyysq", "dd", EventEn.Message);
+
+                base.ClassMethods.Add(typeof(IoHostGetNetwork).Name);
             }
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                this.EventSave(ae.Message, string.Format("{0}.IoSystemList", this.GetType().FullName), EventEn.Error);
+                this.EventSave(ae.Message, string.Format("{0}.IoHost", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
@@ -47,7 +49,7 @@ namespace IoSystem
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                this.EventSave(ae.Message, string.Format("{0}.IoSystemList", this.GetType().FullName), EventEn.Error);
+                this.EventSave(ae.Message, string.Format("{0}.IoMonLanList", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }

@@ -62,7 +62,7 @@
     <Compile Include="ProviderFarm.cs" />
     <Compile Include="ProviderPlg\ProviderBase.cs" />
     <Compile Include="ProviderPlg\ProviderI.cs" />
-    <Compile Include="Segment.cs" />
+    <Compile Include="IoSegment.cs" />
     <Compile Include="Io.cs" />
     <Compile Include="IoFarm.cs" />
     <Compile Include="IoList.cs" />
@@ -98,8 +98,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Task.cs" />
-    <Compile Include="TaskSpace.cs" />
+    <Compile Include="IoTask.cs" />
+    <Compile Include="IoTaskFilter.cs" />
+    <Compile Include="IoTaskProcessTypEn.cs" />
+    <Compile Include="IoTaskSpace.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

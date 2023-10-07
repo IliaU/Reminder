@@ -15,6 +15,8 @@ namespace Common
     public class IoList : IoBase.IoListBase
     {
 
+        #region Param (private)
+
         /// <summary>
         /// Поток для мониторинга состояния ноды и её здооровбя целиком
         /// </summary>
@@ -24,6 +26,13 @@ namespace Common
         /// Состояние мониторинга по всей ноде
         /// </summary>
         private static bool IsRunThrCreateCurentPulList = false;
+
+        #endregion
+
+        #region Param (public get; protected set;)
+
+
+        #endregion
 
         /// <summary>
         /// Конструктор

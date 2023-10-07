@@ -36,5 +36,30 @@ namespace Common
             }
         }
 
+        /// <summary>
+        /// Конвертация в объект TaskProcessTypEn
+        /// </summary>
+        /// <param name="EventStr">Строка которую надо конвертнуть</param>
+        /// <param name="DefaultEvent">Если не можем конвертнуть что в этом случае вернуть</param>
+        /// <returns></returns>
+        public static IoTaskProcessTypEn Convert(string EventStr, IoTaskProcessTypEn DefaultEvent)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(EventStr))
+                {
+                    foreach (IoTaskProcessTypEn item in IoTaskProcessTypEn.GetValues(typeof(IoTaskProcessTypEn)))
+                    {
+                        if (item.ToString().ToUpper() == EventStr.Trim().ToUpper()) return item;
+                    }
+                }
+                return DefaultEvent;
+            }
+            catch (Exception)
+            {
+                return DefaultEvent;
+            }
+        }
+
     }
 }

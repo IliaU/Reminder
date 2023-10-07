@@ -9,12 +9,12 @@ namespace Common
     /// <summary>
     /// Реализация хранилища данных
     /// </summary>
-    public class Segment
+    public class IoSegment
     {
         /// <summary>
         /// К какой категории относится нода. По этому параметру определяется как резервировать процесс для отказоустойчивости.
         /// </summary>
-        public TaskSpace Space { get; private set; } = TaskSpace.None;
+        public IoTaskSpace Space { get; private set; } = IoTaskSpace.None;
 
         /// <summary>
         /// Имя сегмента которое хранит данные

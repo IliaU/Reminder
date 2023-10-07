@@ -10,16 +10,16 @@ using System.Reflection;
 namespace IoSystem
 {
     /// <summary>
-    /// Базовый класс для наших плагинов
+    /// Метод для класса Host который позволяет получать сетевые настройки хоста и его параметры
     /// </summary>
-    public class IoSystem : Io, Common.IoPlg.IoI
+    public class IoHostGetNetwork : Io, Common.IoPlg.IoI
     {
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="PlugInType">Тип палгина - this.GetType().FullName</param>
         /// <param name="VersionPlg">Версия - плагина</param>
-        public IoSystem() : base(Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        public IoHostGetNetwork() : base(Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
         {
             try
             {
@@ -29,7 +29,7 @@ namespace IoSystem
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                this.EventSave(ae.Message, string.Format("{0}.IoSystem", this.GetType().FullName), EventEn.Error);
+                this.EventSave(ae.Message, string.Format("{0}.IoHostGetNetwork", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
