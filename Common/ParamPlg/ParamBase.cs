@@ -154,5 +154,38 @@ namespace Common.ParamPlg
 
 
         #endregion
+
+
+
+        #region CrossClass
+
+        /// <summary>
+        /// Внутренний класс для линковки интерфейсов састомного класса скрытых для пользователя
+        /// </summary>
+        public class CrossLink
+        {
+            // Кастомный объект
+            private ParamBase CustIo;
+
+            /// <summary>
+            /// Линкуеминтерфейс IoI скрытый для пользователя
+            /// </summary>
+            /// <param name="Cust">Кастомный обьект для линковки</param>
+            public CrossLink(ParamBase CustIo)
+            {
+                try
+                {
+                    this.CustIo = CustIo;
+                    CustIo.TransferSql = (ParamTransferSqlI)CustIo;
+                }
+                catch (Exception ex)
+                {
+                    ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
+                    Log.EventSave(ae.Message, string.Format("{0}.CrossLink", this.GetType().FullName), EventEn.Error);
+                    throw ae;
+                }
+            }
+        }
+        #endregion
     }
 }

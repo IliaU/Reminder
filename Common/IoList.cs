@@ -31,6 +31,10 @@ namespace Common
 
         #region Param (public get; protected set;)
 
+        /// <summary>
+        /// Список параметров которым обладает объект
+        /// </summary>
+        public ParamList CurrentPurams = new ParamList();
 
         #endregion
 

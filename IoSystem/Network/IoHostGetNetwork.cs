@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Common;
 using System.Reflection;
 
-namespace IoSystem
+namespace IoSystem.Network
 {
     /// <summary>
     /// Метод для класса Host который позволяет получать сетевые настройки хоста и его параметры

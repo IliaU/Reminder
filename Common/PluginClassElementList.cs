@@ -57,17 +57,12 @@ namespace Common
         {
             try
             {
-                if (Find.IndexOf(".")>0)
+                
+                foreach (PluginClassElement item in Items)
                 {
-
+                    if (item.Name == Find.Trim()) return item;
                 }
-                else
-                {
-                    foreach (PluginClassElement item in Items)
-                    {
-                        if (item.Name == Find.Trim()) return item;
-                    }
-                }
+                
                 return null;
             }
             catch (Exception ex)

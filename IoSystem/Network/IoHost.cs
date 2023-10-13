@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Common;
 using System.Reflection;
 
-namespace IoSystem
+namespace IoSystem.Network
 {
     /// <summary>
     /// Класс представляет из себя пулл с обектами
@@ -23,10 +23,16 @@ namespace IoSystem
         {
             try
             {
+                // Подгружаем наименование нешего параметра для того чтобы плагин знал как обозвать класс
+                base.ClassMethods.Add(typeof(IoHostGetNetwork).Name);
                 //Log.EventSave("Плагин лугойла", "dd", EventEn.Message);
                 //this.EventSave("Плагин лугойла yfcktljdfyysq", "dd", EventEn.Message);
 
-                base.ClassMethods.Add(typeof(IoHostGetNetwork).Name);
+                // Создаём параметры объекта
+                Param PHostName = ParamFarm.CreateNewParam(string.Format("IoSystem.{0}", typeof(IoString).Name));
+                PHostName.ParamName = "HostName";
+                base.CurrentPurams.Add(PHostName);
+
             }
             catch (Exception ex)
             {

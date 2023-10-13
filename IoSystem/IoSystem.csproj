@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IoHostGetNetwork.cs" />
-    <Compile Include="IoHost.cs" />
+    <Compile Include="IoString.cs" />
+    <Compile Include="Network\IoHostGetNetwork.cs" />
+    <Compile Include="Network\IoHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

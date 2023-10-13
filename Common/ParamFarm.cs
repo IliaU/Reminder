@@ -10,9 +10,9 @@ using System.IO;
 namespace Common
 {
     /// <summary>
-    /// Ферма с нашим плагином
+    /// Ферма с типками переменных
     /// </summary>
-    public class IoFarm
+    public class ParamFarm
     {
         /// <summary>
         /// Корневая директория нашего плагина
@@ -24,7 +24,7 @@ namespace Common
         }
 
         /// <summary>
-        /// FolderName нашего плагина
+        /// FolderName нашего плагина распологается вместе с основными классами так как чаще используется с ними
         /// </summary>
         public static string FolderForPlugin
         {
@@ -45,30 +45,19 @@ namespace Common
         /// Получаем список наших плагинов
         /// </summary>
         /// <returns>Список имён доступных плагинов</returns>
-        public static List<PluginClassElementList> ListIoName = null;
-
-        /// <summary>
-        /// Список доступных пулов со своими классами
-        /// </summary>
-        //public static List<IoList> CurentIoPulList = null;
-
-
-        /// <summary>
-        /// Текущий репозиторий
-        /// </summary>
-        //public static Io CurIo;
+        public static List<PluginClassElementList> ListParamName = null;
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        public IoFarm()
+        public ParamFarm()
         {
             try
             {
-                if (ListIoName == null)
+                if (ListParamName == null)
                 {
                     Log.EventSave("Инициализация классов наших плагинов", GetType().Name, EventEn.Message);
-                    GetListIoName();
+                    GetListParamName();
 
                     // Установка текущего репозитория по умолчанию
                     //string dd = ListRepositoryName.Find(x => x == Config.RepositoryName);
@@ -78,43 +67,24 @@ namespace Common
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, string.Format("{0}.IoFarm", this.GetType().FullName), EventEn.Error);
+                Log.EventSave(ae.Message, string.Format("{0}.ParamFarm", this.GetType().FullName), EventEn.Error);
                 throw ae;
             }
         }
 
-        /*
-        /// <summary>
-        /// Установка текущего пула с плагинами
-        /// </summary>
-        /// <param name="NewCurentIoPulList">Список плагинов который установить по умолчанию</param>
-        public static void SetCurrentIo(List<IoList> NewCurentIoPulList)
-        {
-            try
-            {
-                CurentIoPulList = NewCurentIoPulList;
-            }
-            catch (Exception ex)
-            {
-                ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "IoFarm.SetCurrentIo", EventEn.Error);
-                throw ae;
-            }
-        }
-        */
 
         /// <summary>
         /// Получаем список плагинов
         /// </summary>
         /// <returns>Список доступных репозиториев</returns>
-        public static List<PluginClassElementList> GetListIoName()
+        public static List<PluginClassElementList> GetListParamName()
         {
             try
             {
                 // Если список ещё не получали то получаем его
-                if (ListIoName == null)
+                if (ListParamName == null)
                 {
-                    ListIoName = new List<PluginClassElementList>();
+                    ListParamName = new List<PluginClassElementList>();
 
                     // Проверяем наличие папки и если её нет то создаём её
                     if (!Directory.Exists(PathForPlugin)) Directory.CreateDirectory(PathForPlugin);
@@ -132,24 +102,24 @@ namespace Common
                         foreach (Type item in typelist)
                         {
                             // Проверяем реализовывает ли класс наш интерфейс если да то это провайдер который можно подкрузить
-                            bool flagI = false;
+                            bool flagISql = false;
 
                             foreach (Type i in item.GetInterfaces())
                             {
-                                string Search = "IoPlg.IoI";
+                                string Search = "ParamPlg.ParamTransferSqlI";
                                 if (i.FullName.Length > Search.Length && i.FullName.Substring(i.FullName.Length - Search.Length) == Search)
                                 {
-                                    flagI = true;
+                                    flagISql = true;
                                     break;
                                 }
                             }
-                            if (!flagI) continue;
+                            if (!flagISql) continue;
 
                             // Проверяем что наш клас наследует PlugInBase 
                             bool flagB = false;
                             foreach (MemberInfo mi in item.GetMembers())
                             {
-                                string Search = "IoPlg.IoBase";
+                                string Search = "ParamPlg.ParamBase";
                                 if (mi.DeclaringType.FullName.Length > Search.Length && mi.DeclaringType.FullName.Substring(mi.DeclaringType.FullName.Length - Search.Length) == Search)
                                 {
                                     flagB = true;
@@ -192,9 +162,9 @@ namespace Common
                         }
 
                         // Если классы обнаружены то добавляем в наш список нужнное описание источника со своими классами
-                        if (nIoList.Items.Count>0)
+                        if (nIoList.Items.Count > 0)
                         {
-                            ListIoName.Add(nIoList);
+                            ListParamName.Add(nIoList);
                         }
                     }
                 }
@@ -204,7 +174,7 @@ namespace Common
                 Log.EventSave(ex.Message, "IoFarm.GetListIoName", EventEn.Error);
             }
 
-            return ListIoName;
+            return ListParamName;
         }
 
         /// <summary>
@@ -212,31 +182,30 @@ namespace Common
         /// </summary>
         /// <param name="Plg">Описание плагина который хотим создать</param>
         /// <returns>Возвращаем плагин</returns>
-        public static Io CreateNewIo(PluginClassElement Plg)
+        public static Param CreateNewParam(PluginClassElement Plg)
         {
-            Io rez = null;
+            Param rez = null;
             try
             {
                 // Если списка репозиториев ещё нет то создаём его
-                GetListIoName();
+                GetListParamName();
 
                 if (Plg != null)
                 {
                     // Создаём экземпляр объекта
                     //object[] targ = { (string.IsNullOrWhiteSpace(ConnectionString) ? (object)null : ConnectionString) };
-                    rez = (Io)Activator.CreateInstance(Plg.EmptTyp/*, targ*/);
+                    rez = (Param)Activator.CreateInstance(Plg.EmptTyp/*, targ*/);
 
                     rez.FileInfo = Plg.FileInfo;
                     rez.ElementDll = Plg;
 
                     // Линкуем в базовый класс специальный скрытый интерфейс для того чтобы базовый класс мог что-то специфическое вызывать в дочернем объекте
-                    //RepositoryPlg.Lib.RepositoryBase.CrossLink CrLink = new RepositoryPlg.Lib.RepositoryBase.CrossLink(rez);
+                    ParamPlg.ParamBase.CrossLink CrLink = new ParamPlg.ParamBase.CrossLink(rez);
                 }
-                
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewIo", EventEn.Error);
+                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewParam", EventEn.Error);
             }
 
             return rez;
@@ -247,40 +216,38 @@ namespace Common
         /// </summary>
         /// <param name="PlugInType">Имя плагина определяющего тип который создаём</param>
         /// <returns>Возвращаем плагин</returns>
-        public static Io CreateNewIo(string PlugInType)
+        public static Param CreateNewParam(string PlugInType)
         {
-            Io rez = null;
+            Param rez = null;
             try
             {
                 // Если списка репозиториев ещё нет то создаём его
-                GetListIoName();
+                GetListParamName();
 
-                foreach (PluginClassElementList item in ListIoName)
+                foreach (PluginClassElementList item in ListParamName)
                 {
                     string FileName = "IoSystem";
                     string Plugin = PlugInType;
                     if (PlugInType.IndexOf(".") > 0)
                     {
                         FileName = PlugInType.Substring(0, PlugInType.IndexOf("."));
-                        PlugInType = PlugInType.Substring(PlugInType.IndexOf(".") + 1);
+                        PlugInType = PlugInType.Substring(PlugInType.IndexOf(".")+1);
                     }
 
                     if (item.PluginFileName.Replace(".dll", "") == FileName)
                     {
                         PluginClassElement Plg = item.GetPlgForName(PlugInType);
-                        rez=CreateNewIo(Plg);
+                        rez=CreateNewParam(Plg);
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewIo", EventEn.Error);
+                Log.EventSave(ex.Message, "RepositoryFarm.CreateNewParam", EventEn.Error);
             }
 
             return rez;
         }
-
 
     }
 }

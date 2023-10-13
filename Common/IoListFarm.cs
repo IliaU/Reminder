@@ -42,10 +42,11 @@ namespace Common
         }
 
         /// <summary>
-        /// Получаем список наших плагинов
+        /// Получаем список наших плагинов (Методов)
         /// </summary>
         /// <returns>Список имён доступных плагинов</returns>
         public static List<PluginClassElementList> ListIoListName = null;
+
 
         /// <summary>
         /// Конструктор

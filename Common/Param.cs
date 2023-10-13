@@ -14,6 +14,11 @@ namespace Common
     public class Param : ParamBase
     {
         /// <summary>
+        /// Имя параметра
+        /// </summary>
+        public string ParamName;
+
+        /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="PlugInType">Тип палгина - this.GetType().FullName || Assembly.GetExecutingAssembly().FullName</param>
@@ -31,5 +36,8 @@ namespace Common
                 throw ae;
             }
         }
+
+
+
     }
 }

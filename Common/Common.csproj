@@ -47,6 +47,7 @@
     <Compile Include="EventProviderFarm.cs" />
     <Compile Include="EventRepositoryFarm.cs" />
     <Compile Include="Param.cs" />
+    <Compile Include="ParamFarm.cs" />
     <Compile Include="ParamList.cs" />
     <Compile Include="ParamPlg\EventParamAdd.cs" />
     <Compile Include="ParamPlg\EventParamDelete.cs" />

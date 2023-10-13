@@ -38,6 +38,8 @@ namespace Reminder
                     // Создаём Ферму с пулами и с доступными элементами для них
                     IoFarm IoF = new IoFarm();
                     IoListFarm ILisF = new IoListFarm();
+                    ParamFarm Par = new ParamFarm();
+                    // ParamFarm.CreateNewParam(string.Format("{0}.{1}", ParamFarm.ListParamName[0].PluginFileName.Replace(".dll",""), ParamFarm.ListParamName[0].Items[0].Name));
 
                     //IoFarm.CreateNewIo(IoFarm.ListIoName[0].Items[0]);
                     //IoListFarm.CreateNewIoList(IoListFarm.ListIoListName[0].Items[0]);
