@@ -68,6 +68,7 @@ namespace Reminder
                 this.PicStatRepOnline.Image = CustomizationFarm.CurCustomization.GetIconDbStatus(true);
                 this.PicStatRepOfline.Image = CustomizationFarm.CurCustomization.GetIconDbStatus(false);
 
+                // Настройка менюшки в терее рядом с часами
                 m_menu = new ContextMenu();
                 m_menu.MenuItems.Add(0, new MenuItem("Show", new System.EventHandler(Show_Click)));
                 m_menu.MenuItems.Add(1, new MenuItem("Hide", new System.EventHandler(Hide_Click)));
@@ -80,6 +81,52 @@ namespace Reminder
                 m_notifyicon.Icon = CustomizationFarm.CurCustomization.GetIconStatus(EventEn.Message);
                 m_notifyicon.ContextMenu = m_menu;
                 m_notifyicon.DoubleClick += new EventHandler(DoubleClickIcon);
+
+                
+                // Подгружаем информацию по загруженным плагинам
+                foreach (IoList IoLst in ProgramStatus.CurentIoPulList)
+                {
+                    try
+                    {
+                        //this.Uplg = new UPlugIn(this.com, item);
+                        this.TSMI_Plg_Instaled.DropDownItems.Add(IoLst.GetFormMainCustSetup());
+
+                        // Если есть меню клавное для вывода в самих плагинах в самом верщу то подгружаем его
+                        ToolStripMenuItem nitem = IoLst.GetFormMainCust();
+                        if (nitem!=null)
+                        {
+                            this.TSMI_Plg.DropDownItems.Add(nitem);
+                        }
+
+
+                        /* Старый пример с перестройкой менюшки динамической
+                        // Подгружаем формы наших плагинов.
+                        if (this.Uplg.PlgF != null)
+                        {
+                            // Подписываемся на изменение меню в этом плагине
+                            this.Uplg.onChangeMenuFrom += new EventHandler<Common.PLUGIN.Lib.EventChangeMenuFrom>(Uplg_onChangeMenuFrom);
+
+                            // Получаем формы и если они есть то добавляем их в список
+                            List<ToolStripMenuItem> PlgForm = this.Uplg.PlgF.GetFormMain();
+                            if (PlgForm != null && PlgForm.Count > 0)
+                            {
+                                // Добавляем корневой элемент нашего плагина
+                                ToolStripMenuItem root = new ToolStripMenuItem(this.Uplg.InfoToolStripMenuItem.Text);
+                                if (this.Uplg.InfoToolStripMenuItem.Image != null) root.Image = this.Uplg.InfoToolStripMenuItem.Image;
+                                this.TSMI_Plg.DropDownItems.Add(root);
+
+                                // Добавляем меню плагина в корень его папки в плагинах меню
+                                foreach (ToolStripMenuItem tmpplg in PlgForm)
+                                {
+                                    root.DropDownItems.Add(tmpplg);
+                                }
+                            }
+                        }
+                        */
+                    }
+                    catch (Exception) { }
+                }
+                
 
                 // Подписываемся на события 
                 Log.onEventLog += Log_onEventLog;                                           // Лог программы то что пишем в лог
@@ -96,6 +143,8 @@ namespace Reminder
             }
         }
 
+      
+
         /// <summary>
         /// Подписываемся на изменение иконок в форме
         /// </summary>
@@ -105,6 +154,8 @@ namespace Reminder
         {
             //throw new NotImplementedException();
         }
+
+        #region Обслуживание иконки в трее и логики блокировки и закрытия программы
 
         /// <summary>
         /// Отображает скрытую форму
@@ -320,6 +371,63 @@ namespace Reminder
             //  this.com.RefreshEvent = true;       // принудительно заставляем перечитать таблицу с результатами
             return;
         }
+
+        #endregion
+
+        /* Старый пример с перестройкой менюшки динамической
+        delegate void delig_Uplg_onChangeMenuFrom(object sender, Common.PLUGIN.Lib.EventChangeMenuFrom e);
+        // Произошло событие изменения менюшки в плагине, нужно её перестроить
+        private void Uplg_onChangeMenuFrom(object sender, Common.PLUGIN.Lib.EventChangeMenuFrom e)
+        {
+            if (this.InvokeRequired)
+            {
+                if (this.KeyCtrl) return;
+                delig_Uplg_onChangeMenuFrom dl = new delig_Uplg_onChangeMenuFrom(Uplg_onChangeMenuFrom);
+                this.Invoke(dl, new object[] { sender, e });
+            }
+            else
+            {
+                try
+                {
+                    lock (LockObj)
+                    {
+                        // Пробегаем по первому уровню менюшки чтобы найти нужный нам плагин, который обновил своё меню
+                        for (int i = 0; i < this.TSMI_Plg_Instaled.DropDownItems.Count; i++)
+                        {
+                            // Если обнаружили то перестраиваем
+                            if (this.TSMI_Plg_Instaled.DropDownItems[i].Text == e.Plg.InfoToolStripMenuItem.Text)
+                            {
+                                // Удаляем меню плагина
+                                //this.TSMI_Plg.DropDownItems.RemoveAt(i);
+
+                                // Подмена элемента нашего плагина
+                                //ToolStripMenuItem root = new ToolStripMenuItem(e.Plg.InfoToolStripMenuItem.Text);
+                                //if (e.Plg.InfoToolStripMenuItem.Image != null) root.Image = e.Plg.InfoToolStripMenuItem.Image;
+                                //this.TSMI_Plg.DropDownItems.Add(root);
+                                //
+                                ((ToolStripMenuItem)this.TSMI_Plg.DropDownItems[i]).DropDownItems.Clear();
+
+                                // Добавляем менюшки
+                                foreach (ToolStripMenuItem tmpplg in e.TSMI)
+                                {
+                                    //root.DropDownItems.Add(tmpplg);
+                                    //
+                                    ((ToolStripMenuItem)this.TSMI_Plg.DropDownItems[i]).DropDownItems.Add(tmpplg);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string mes = string.Format("Возникла ошибка в интерфейсе: {0}", ex.Message);
+                    this.com.Log.EventSave(mes, this.ToString() + "Uplg_onChangeMenuFrom", Lib.EventEn.Error);
+                    MessageBox.Show(mes);
+                }
+            }
+        }
+        */
+
 
         /// <summary>
         /// Произошло событие системное правим текущий статус

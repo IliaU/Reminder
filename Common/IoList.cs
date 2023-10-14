@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Threading;
+using System.Windows.Forms;
 using Common.IoPlg;
 
 namespace Common
@@ -76,7 +77,43 @@ namespace Common
             }
         }
 
+        /// <summary>
+        /// Получение элементов в главную форму для настройки глобальных свойств
+        /// Данное событие обязательно. Необходимо для настройки глобальных методов которые будут доступны всем и для управления пулами на нодах их колличеством и правилами кто будет выполнять из нод задания
+        /// </summary>
+        /// <returns>Объект контектсного меню в главной форме, который будет видель наш пользователь</returns>
+        public virtual ToolStripMenuItem GetFormMainCustSetup()
+        {
+            try
+            {
+                throw new ApplicationException("Необходимо переписать метод чтобы подставить правильный элемент меню по нашему плагину");
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе GetFormMainCustSetup:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.GetFormMainCustSetup(", this.GetType().FullName), EventEn.Error);
+                throw ae;
+            }
+        }
 
-        
+        /// <summary>
+        /// Получение элементов в главную форму в меню самих плагинов
+        /// Данный метод не обязательны нужен только для корневого эелоемента плагина. Например это может быть отдельная программа которая потом будет дёргать другие объекты и генерить собственные события и подписки в ядре
+        /// </summary>
+        /// <returns>Объект контектсного меню в главной форме в менюшке плагинов как рутовый объект, который будет видель наш пользователь</returns>
+        public virtual ToolStripMenuItem GetFormMainCust()
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в методе GetFormMainCust:""{0}""", ex.Message));
+                Log.EventSave(ae.Message, string.Format("{0}.GetFormMainCust(", this.GetType().FullName), EventEn.Error);
+                throw ae;
+            }
+        }
+
     }
 }

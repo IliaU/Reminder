@@ -46,6 +46,8 @@ namespace Reminder
             this.PicStatRepOfline = new System.Windows.Forms.PictureBox();
             this.PicStatRepOnline = new System.Windows.Forms.PictureBox();
             this.pnlFill = new System.Windows.Forms.Panel();
+            this.TSMI_Plg_Instaled = new System.Windows.Forms.ToolStripMenuItem();
+            this.TSMI_Plg = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.pnlTop.SuspendLayout();
@@ -61,7 +63,9 @@ namespace Reminder
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TsmItemConfig});
+            this.TsmItemConfig,
+            this.TSMI_Plg_Instaled,
+            this.TSMI_Plg});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(682, 36);
@@ -209,6 +213,18 @@ namespace Reminder
             this.pnlFill.Size = new System.Drawing.Size(800, 490);
             this.pnlFill.TabIndex = 3;
             // 
+            // TSMI_Plg_Instaled
+            // 
+            this.TSMI_Plg_Instaled.Name = "TSMI_Plg_Instaled";
+            this.TSMI_Plg_Instaled.Size = new System.Drawing.Size(167, 32);
+            this.TSMI_Plg_Instaled.Text = "Настройка плагинов";
+            // 
+            // TSMI_Plg
+            // 
+            this.TSMI_Plg.Name = "TSMI_Plg";
+            this.TSMI_Plg.Size = new System.Drawing.Size(85, 32);
+            this.TSMI_Plg.Text = "Плагины";
+            // 
             // FStart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -259,6 +275,8 @@ namespace Reminder
         private System.Windows.Forms.ToolStripMenuItem TsmItemConfigParam;
         private System.Windows.Forms.PictureBox PicStatPrvOnline;
         private System.Windows.Forms.PictureBox PicStatPrvOfline;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Plg_Instaled;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Plg;
     }
 }
 
