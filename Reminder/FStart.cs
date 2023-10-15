@@ -92,10 +92,13 @@ namespace Reminder
                         this.TSMI_Plg_Instaled.DropDownItems.Add(IoLst.GetFormMainCustSetup());
 
                         // Если есть меню клавное для вывода в самих плагинах в самом верщу то подгружаем его
-                        ToolStripMenuItem nitem = IoLst.GetFormMainCust();
-                        if (nitem!=null)
+                        List<ToolStripMenuItem> nlTSMI = IoLst.GetFormMainCust();
+                        if (nlTSMI  != null)
                         {
-                            this.TSMI_Plg.DropDownItems.Add(nitem);
+                            foreach (ToolStripMenuItem nitem in nlTSMI)
+                            {
+                                this.TSMI_Plg.DropDownItems.Add(nitem);
+                            }
                         }
 
 

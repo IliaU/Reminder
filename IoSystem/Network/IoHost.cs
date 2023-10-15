@@ -114,10 +114,12 @@ namespace IoSystem.Network
         /// Данный метод не обязательны нужен только для корневого эелоемента плагина. Например это может быть отдельная программа которая потом будет дёргать другие объекты и генерить собственные события и подписки в ядре
         /// </summary>
         /// <returns>Объект контектсного меню в главной форме в менюшке плагинов как рутовый объект, который будет видель наш пользователь</returns>
-        public override ToolStripMenuItem GetFormMainCust()
+        public override List<ToolStripMenuItem> GetFormMainCust()
         {
             try
             {
+                List<ToolStripMenuItem> rez = new List<ToolStripMenuItem>();
+
                 ToolStripMenuItem nitemS = new ToolStripMenuItem(Resources.IoHost_WinPng);
                 nitemS.Click += NitemS_Click;
                 //nitemS.BackColor = Color.Khaki;
@@ -125,7 +127,9 @@ namespace IoSystem.Network
                 nitemS.Text = this.GetType().Name;
                 //nitemS.Tag = item;
 
-                return nitemS;
+                rez.Add(nitemS);
+
+                return rez;
             }
             catch (Exception ex) { throw ex; }
         }

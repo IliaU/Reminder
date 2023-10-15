@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.Threading;
 using System.Windows.Forms;
+using System.Collections;
 using Common.IoPlg;
 
 namespace Common
@@ -101,7 +102,7 @@ namespace Common
         /// Данный метод не обязательны нужен только для корневого эелоемента плагина. Например это может быть отдельная программа которая потом будет дёргать другие объекты и генерить собственные события и подписки в ядре
         /// </summary>
         /// <returns>Объект контектсного меню в главной форме в менюшке плагинов как рутовый объект, который будет видель наш пользователь</returns>
-        public virtual ToolStripMenuItem GetFormMainCust()
+        public virtual List<ToolStripMenuItem> GetFormMainCust()
         {
             try
             {
