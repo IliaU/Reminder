@@ -60,7 +60,7 @@ namespace Common
                 
                 foreach (PluginClassElement item in Items)
                 {
-                    if (item.Name == Find.Trim()) return item;
+                    if (item.EmptTyp.FullName == Find.Trim()) return item;
                 }
                 
                 return null;

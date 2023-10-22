@@ -20,9 +20,8 @@ namespace IoSystem.Network
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="PlugInType">Тип палгина - this.GetType().FullName</param>
-        /// <param name="VersionPlg">Версия - плагина</param>
-        public IoHost() : base(Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        /// <param name="Plg">Информация по плагину чтобы можно было найти файл откудазагрузился и путь в том числе</param>
+        public IoHost(PluginClassElement Plg) : base(Plg, Assembly.GetExecutingAssembly().FullName, Assembly.GetExecutingAssembly().GetName().Version.ToString())
         {
             try
             {

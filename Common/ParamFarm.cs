@@ -231,7 +231,7 @@ namespace Common
                     if (PlugInType.IndexOf(".") > 0)
                     {
                         FileName = PlugInType.Substring(0, PlugInType.IndexOf("."));
-                        PlugInType = PlugInType.Substring(PlugInType.IndexOf(".")+1);
+                    //    PlugInType = PlugInType.Substring(PlugInType.IndexOf(".")+1);
                     }
 
                     if (item.PluginFileName.Replace(".dll", "") == FileName)

@@ -42,6 +42,16 @@ namespace Common.IoPlg
             #region Param (public get; private set;)
 
             /// <summary>
+            /// Тип палгина
+            /// </summary>
+            public string PlugInType { get; private set; } = null;
+
+            /// <summary>
+            /// Возвращает версию плагина
+            /// </summary>
+            public string VersionPlg { get; private set; }
+
+            /// <summary>
             /// Получить текущие количество элементов в списке
             /// </summary>
             public int Count
@@ -80,9 +90,9 @@ namespace Common.IoPlg
             public string FolderName { get; private set; } = null;
 
             /// <summary>
-            /// Возвращает версию плагина
+            /// Возвращает полный путь к плагину
             /// </summary>
-            public string PluginFileName { get; private set; }
+            public string PluginFullName { get; private set; }
 
             /// <summary>
             /// Информация по файлу
@@ -161,14 +171,17 @@ namespace Common.IoPlg
             /// <summary>
             /// Конструктор
             /// </summary>
-            /// <param name="FolderName">Путь к плагину от корня для того чтобы видеть вложения</param>
-            /// <param name="PluginFileName">Имя файла для того чтобы понимать из какого файла подгружены классы </param>
-            public IoListBase(string FolderName, string PluginFileName)
+            /// <param name="Plg">Информация по плагину чтобы можно было найти файл откудазагрузился и путь в том числе</param>
+            /// <param name="PlugInType">Тип палгина - this.GetType().FullName || Assembly.GetExecutingAssembly().FullName</param>
+            /// <param name="VersionPlg">Версия плагина - Assembly.GetExecutingAssembly().GetName().Version.ToString()</param>
+            public IoListBase(PluginClassElement Plg, string PlugInType, string VersionPlg)
             {
                 try
                 {
-                    this.FolderName = FolderName;
-                    this.PluginFileName = PluginFileName;
+                    this.FolderName = string.Format("{0}\\{1}", Plg.FileInfo.FolderName, Plg.FileInfo.PluginFileName);
+                    this.PluginFullName = Plg.EmptTyp.FullName;
+                    this.PlugInType = PlugInType;
+                    this.VersionPlg = VersionPlg;
                     this.ClassMethods = new List<string>();
                 }
                 catch (Exception ex)
@@ -335,7 +348,7 @@ namespace Common.IoPlg
             {
                 try
                 {
-                    Log.EventSave(Message, string.Format("({0}).{1}", this.FolderName, this.PluginFileName), evn, IsLog, Show);
+                    Log.EventSave(Message, string.Format("({0}).{1}", this.FolderName, this.PluginFullName), evn, IsLog, Show);
                 }
                 catch (Exception ex)
                 {
@@ -420,7 +433,7 @@ namespace Common.IoPlg
                             if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
                             {
                                 // Фиксируем версию нашего приложения и его статус
-                                ((RepositoryI)RepositoryFarm.CurRepository).PulBasicSetStatus(Environment.MachineName, this.FolderName, DateTime.Now, this.PluginFileName, LastStatus.ToString());
+                                ((RepositoryI)RepositoryFarm.CurRepository).PulBasicSetStatus(Environment.MachineName, this.PluginFullName, DateTime.Now, this.VersionPlg, LastStatus.ToString());
                             }
                         }
 

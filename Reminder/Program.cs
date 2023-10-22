@@ -52,6 +52,9 @@ namespace Reminder
                     //Repository rep = RepositoryFarm.CreateNewRepository("RepositoryMsSql");
                     //ProgramStatus.CreateCurentPulList();
 
+
+                    //IoList ff = IoListFarm.CreateNewIoList("IoSystem.Network.IoHost");
+
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new FStart());

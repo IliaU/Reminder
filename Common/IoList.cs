@@ -43,9 +43,10 @@ namespace Common
         /// <summary>
         /// Конструктор
         /// </summary>
+        /// <param name="Plg">Информация по плагину чтобы можно было найти файл откудазагрузился и путь в том числе</param>
         /// <param name="FolderName">Путь к плагину от корня для того чтобы видеть вложения</param>
         /// <param name="PluginFileName">Имя файла для того чтобы понимать из какого файла подгружены классы </param>
-        public IoList(string FolderName, string PluginFileName) : base(FolderName, PluginFileName)
+        public IoList(PluginClassElement Plg, string FolderName, string PluginFileName) : base(Plg, FolderName, PluginFileName)
         {
             try
             {

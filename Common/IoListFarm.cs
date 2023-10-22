@@ -129,8 +129,8 @@ namespace Common
                             if (!flagB) continue;
 
                             // Проверяем конструктор нашего класса  
-                            //bool flag1 = false;
-                            bool flag0 = false;
+                            bool flag1 = false;
+                            //bool flag0 = false;
                             string nameConstructor;
                             foreach (ConstructorInfo ctor in item.GetConstructors())
                             {
@@ -139,23 +139,23 @@ namespace Common
                                 // получаем параметры конструктора  
                                 ParameterInfo[] parameters = ctor.GetParameters();
 
-                                /*
+                                
                                 // если в этом конструктаре должно быть несколько параметров
                                 if (parameters.Length == 1)
                                 {
                                     bool flag = true;
-                                    if (parameters[0].ParameterType.Name != "String" || parameters[0].Name != "ConnectionString") flag = false;
+                                    if (parameters[0].ParameterType.Name != "PluginClassElement" || parameters[0].Name != "Plg") flag = false;
 
                                     flag1 = flag;
                                 }
-                                */
+                                
 
 
                                 // Проверяем конструктор для создания документа пустого по умолчанию
-                                if (parameters.Length == 0) flag0 = true;
+                                //if (parameters.Length == 0) flag0 = true;
                             }
-                            //if (!flag1) continue;
-                            if (!flag0) continue;
+                            if (!flag1) continue;
+                            //if (!flag0) continue;
 
                             // Создаём описание нашего класса
                             nIoList.Items.Add(new PluginClassElement(item.Name, item, nIoList));
@@ -194,7 +194,7 @@ namespace Common
                 {
                     // Создаём экземпляр объекта
                     object[] targ = { Plg };
-                    rez = (IoList)Activator.CreateInstance(Plg.EmptTyp/*, targ*/);
+                    rez = (IoList)Activator.CreateInstance(Plg.EmptTyp, targ);
 
                     rez.FileInfo = Plg.FileInfo;
                     rez.ElementDll = Plg;
@@ -224,14 +224,14 @@ namespace Common
             IoList rez = null;
             try
             {
-                // Если списка репозиториев ещё нет то создаём его
+                // Если списка пулов ещё нет то создаём его
                 GetListIoListName();
 
                 foreach (PluginClassElementList item in ListIoListName)
                 {
                     PluginClassElement Plg = item.GetPlgForName(PlugInType);
 
-                    CreateNewIoList(Plg);
+                    rez = CreateNewIoList(Plg);
                 }
             }
             catch (Exception ex)
