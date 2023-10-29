@@ -19,6 +19,7 @@ CREATE TABLE [io].[Config]
 	[ValBigInt0] [bigint] NULL,
 	[ValBit0] [bit] NULL,
 	[ValDate0] [date] NULL,
+	[ValUniquei0] [uniqueidentifier] NULL,
  CONSTRAINT [PK_Config] PRIMARY KEY CLUSTERED 
  (
 	[ParamSpace] ASC,
@@ -35,3 +36,14 @@ insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValBit0])
 Select 'io', 'Global', 'Trace', 0
 Where not exists 
 	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'io' and [ParamGroup] = 'Global' and [ParamName] = 'Trace');
+
+
+insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValStr0])
+Select 'PulBasicStatus', 'IoSystem.Network.IoHost', 'TaskProcessTyp', 'Monitoring'
+Where not exists 
+	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'PulBasicStatus' and [ParamGroup] = 'IoSystem.Network.IoHost' and [ParamName] = 'TaskProcessTyp');
+
+insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValUniquei0])
+Select 'PulBasicStatus', 'IoSystem.Network.IoHost', 'GlobalObjId', NEWID()
+Where not exists 
+	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'PulBasicStatus' and [ParamGroup] = 'IoSystem.Network.IoHost' and [ParamName] = 'GlobalObjId');

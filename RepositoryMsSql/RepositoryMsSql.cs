@@ -729,9 +729,9 @@ namespace RepositoryMsSql
         {
             IoTask rez=null;
 
-            string SQL = "[io].[NodeSetStatus]";
+            string SQL = "[io].[TaskSelect]";
             try
-            {/*
+            {
                 // Проверка подключения
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
@@ -751,25 +751,45 @@ namespace RepositoryMsSql
                         //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
                         //com.Parameters.Add(PId);
                         //
-                        SqlParameter PMachineName = new SqlParameter("@MachineName", SqlDbType.VarChar, 100);
-                        PMachineName.Direction = ParameterDirection.Input;
-                        PMachineName.Value = MachineName;
-                        com.Parameters.Add(PMachineName);
+                        SqlParameter PGuidTask = new SqlParameter("@GuidTask", SqlDbType.UniqueIdentifier);
+                        PGuidTask.Direction = ParameterDirection.Input;
+                        PGuidTask.Value = DraftTask.GuidTask;
+                        com.Parameters.Add(PGuidTask);
                         //
-                        SqlParameter PLastDateReflection = new SqlParameter("@LastDateReflection", SqlDbType.DateTime);
-                        PLastDateReflection.Direction = ParameterDirection.Input;
-                        PLastDateReflection.Value = LastDateReflection;
-                        com.Parameters.Add(PLastDateReflection);
+                        SqlParameter PDomainName = new SqlParameter("@DomainName", SqlDbType.VarChar, 100);
+                        PDomainName.Direction = ParameterDirection.Input;
+                        PDomainName.Value = DraftTask.DomainName;
+                        com.Parameters.Add(PDomainName);
                         //
-                        SqlParameter PVersionPul = new SqlParameter("@VersionNode", SqlDbType.VarChar, 50);
-                        PVersionPul.Direction = ParameterDirection.Input;
-                        PVersionPul.Value = VersionNode;
-                        com.Parameters.Add(PVersionPul);
+                        SqlParameter PHostName = new SqlParameter("@HostName", SqlDbType.VarChar, 100);
+                        PHostName.Direction = ParameterDirection.Input;
+                        PHostName.Value = DraftTask.HostName;
+                        com.Parameters.Add(PHostName);
                         //
-                        SqlParameter PLastStatusCustom = new SqlParameter("@LastStatusNode", SqlDbType.VarChar, 50);
-                        PLastStatusCustom.Direction = ParameterDirection.Input;
-                        PLastStatusCustom.Value = LastStatusNode;
-                        com.Parameters.Add(PLastStatusCustom);
+                        SqlParameter PUserName = new SqlParameter("@UserName", SqlDbType.VarChar, 100);
+                        PUserName.Direction = ParameterDirection.Input;
+                        PUserName.Value = DraftTask.UserName;
+                        com.Parameters.Add(PUserName);
+                        //
+                        SqlParameter PStatusLoockMachine = new SqlParameter("@StatusLoockMachine", SqlDbType.Bit);
+                        PStatusLoockMachine.Direction = ParameterDirection.Input;
+                        PStatusLoockMachine.Value = DraftTask.StatusLoockMachine;
+                        com.Parameters.Add(PStatusLoockMachine);
+                        //
+                        SqlParameter PClassVersion = new SqlParameter("@ClassVersion", SqlDbType.Int);
+                        PClassVersion.Direction = ParameterDirection.Input;
+                        PClassVersion.Value = DraftTask.ClassVersion;
+                        com.Parameters.Add(PClassVersion);
+                        //
+                        SqlParameter PPluginClass = new SqlParameter("@PluginClass", SqlDbType.VarChar, 300);
+                        PPluginClass.Direction = ParameterDirection.Input;
+                        PPluginClass.Value = DraftTask.PluginClass;
+                        com.Parameters.Add(PPluginClass);
+                        //
+                        SqlParameter PTaskProcessTyp = new SqlParameter("@TaskProcessTyp", SqlDbType.VarChar, 50);
+                        PTaskProcessTyp.Direction = ParameterDirection.Input;
+                        PTaskProcessTyp.Value = DraftTask.TaskProcessTyp.ToString();
+                        com.Parameters.Add(PTaskProcessTyp);
 
                         // Строим строку которую воткнём в дамп в случае падения
                         SQL = GetStringPrintPar(com);
@@ -783,7 +803,7 @@ namespace RepositoryMsSql
 
                     con.Close();
                 }
-                */
+                
             }
             catch (SqlException ex)
             {

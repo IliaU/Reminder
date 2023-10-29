@@ -13,6 +13,26 @@ namespace Common
     /// </summary>
     public class Repository : RepositoryBase
     {
+
+        /// <summary>
+        /// Получить интерфейс созданный плагином для репозиториев
+        /// </summary>
+        /// <returns>Интерфейс созданный для весех репозиториев</returns>
+        public RepositoryI GetRepI
+        {
+            get 
+            {
+                try
+                {
+                    return (RepositoryI)this;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
+
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -32,5 +52,7 @@ namespace Common
                 throw ae;
             }
         }
+
+        
     }
 }

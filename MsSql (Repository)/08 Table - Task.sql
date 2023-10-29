@@ -8,10 +8,13 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 CREATE TABLE [io].[Task](
-	[ObjParamListId] [uniqueidentifier] NOT NULL,
 	[PluginClass] [varchar](300) NOT NULL,
+	[ObjParamListId] [uniqueidentifier] NOT NULL default(NEWID()),
 	[Location] [varchar](Max) NULL,
+	[ObjInParamListId] [uniqueidentifier] NULL,
+	[PluginClassMethod] [varchar](300) NULL,
 	[DomainName] [varchar](100) NULL,
 	[HostName] [varchar](100) NULL,
 	[UserName] [varchar](100) NULL,
@@ -19,11 +22,12 @@ CREATE TABLE [io].[Task](
 	[ClassVersion] [int] NOT NULL default (0),
 	[StartTimeOutSec] [int] NOT NULL default (15), 
 	[Segment] [varchar](1) NULL,
+	[TaskProcessTyp] [varchar](50) NULL,
 	[ErrorRetryCount]  [int] NOT NULL default (3),
 	[ErrorRetryTimeOutSec] [int] NOT NULL default (30),
 	[ReflexionTimeOutSec] [int] NOT NULL default (3600),
-	[Prioritet] [int] NOT NULL default (30),
-	[GuidTask] [uniqueidentifier] NOT NULL,
+	[Prioritet] [int] NOT NULL default (1000),
+	[GuidTask] [uniqueidentifier] NULL,
  CONSTRAINT [PK_Task] PRIMARY KEY CLUSTERED 
 (
 	[ObjParamListId] ASC,
@@ -37,7 +41,11 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Идентификатор 
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Класс плагина для которого предназначается это задание. (аналог метода который вызывается в классе)' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'PluginClass'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N' Фмзическое расположение ноды в дереве с разделителем \. По умолчанию % что означает любое расположение' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'Location'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Физическое расположение ноды в дереве с разделителем \. По умолчанию % что означает любое расположение' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'Location'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Имя домена для которого предназначено задание' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'ObjInParamListId'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Имя домена для которого предназначено задание' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'PluginClassMethod'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Имя домена для которого предназначено задание' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'DomainName'
 GO
@@ -53,6 +61,8 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Минимальное ко
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Реализация хранилища данных' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'Segment'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип задания для того чтобы работы логики в плагинах' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'TaskProcessTyp'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Количество повторов в случае сбоя на других нодах (При условии что  все оберации атомарны)' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'ErrorRetryCount'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Таймаут в секундах заданный к повторному повторению в случае сбоя (При условии что  все оберации атомарны)' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'ErrorRetryTimeOutSec'
@@ -63,3 +73,15 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Приоритет сраб
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Идентификатор задания который получит база чтобы зафиксировать задание за этой нодой' , @level0type=N'SCHEMA',@level0name=N'io', @level1type=N'TABLE',@level1name=N'Task', @level2type=N'COLUMN',@level2name=N'GuidTask'
 GO
+
+insert into [io].[Task]([ObjParamListId], [PluginClass], [Location], [DomainName], [HostName], [UserName], [ClassVersion], [TaskProcessTyp])
+Select Max([ValUniquei0]) As [ObjParamListId], ParamGroup As [PluginClass], '%', '%', '%', '%', 1000000000, Max([ValStr0]) As [TaskProcessTyp]
+From [io].[Config]
+Where ParamSpace = 'PulBasicStatus'
+	and ParamGroup = 'IoSystem.Network.IoHost'
+	and ParamName in ('GlobalObjId', 'TaskProcessTyp')
+	and not exists  (Select 1 
+					From [io].[Task] 
+					Where ParamSpace = 'PulBasicStatus'
+						and ParamGroup = 'IoSystem.Network.IoHost')
+Group By ParamGroup;

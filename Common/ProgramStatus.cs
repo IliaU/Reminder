@@ -270,9 +270,9 @@ namespace Common
             }
             catch (Exception ex)
             {
-            ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
-            Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
-            throw ae;
+                ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
+                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+                throw ae;
             }
         }
 
