@@ -176,20 +176,88 @@ namespace Common
             {
                 // Устанавливаем тайм из конфига
                 int CountWhile = Config.SecondPulRefreshStatus;
+                bool OldStatusRep = (RepositoryFarm.CurRepository!=null ? RepositoryFarm.CurRepository.HashConnect : false);
+                bool OldStatusPrvMon = (ProviderFarm.CurProviderMon!=null ? ProviderFarm.CurProviderMon.HashConnect : false);
+                bool OldStatusPrvObj = (ProviderFarm.CurProviderObj!=null ? ProviderFarm.CurProviderObj.HashConnect : false);
 
                 while (IsRunThrCreateCurentPulList)
                 {
                     if (CountWhile == 0)
                     {
-                        // Устанавливаем тайм аут из конфига
-                        CountWhile = Config.SecondPulRefreshStatus;
-
-                        // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
-                        if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                        try
                         {
-                            // Фиксируем версию нашего приложения и его статус
-                            Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
-                            ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Running.ToString());
+                            // Устанавливаем тайм аут из конфига
+                            CountWhile = Config.SecondPulRefreshStatus;
+
+                            // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
+                            if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                            {
+                                // Фиксируем версию нашего приложения и его статус
+                                Version Ver = Assembly.GetExecutingAssembly().GetName().Version;
+                                ((RepositoryI)RepositoryFarm.CurRepository).NodeSetStatus(Environment.MachineName, DateTime.Now, Ver.ToString(), EventEn.Running.ToString());
+                            }
+
+                            // Проверяем текущий статус репозитория
+                            if (RepositoryFarm.CurRepository != null)
+                            { 
+                                bool NewStatusRep = RepositoryFarm.CurRepository.TestConnect();
+                                if (OldStatusRep != NewStatusRep)
+                                {
+                                    Log.EventSave(String.Format("Произошло изменеие статуса подключения в текущем репозитории с {0} состояния в {1} состояние.", OldStatusRep, NewStatusRep), "ProgramStatus.ACreateCurentPulList", EventEn.Warning);
+                                }
+                                OldStatusRep = NewStatusRep;
+                            }
+
+                            // Проверяем наличие подключения к провайдеру с объектами мониторинга
+                            if (RepositoryFarm.CurRepository != null)
+                            {
+                                // Если объект не установлен то устанавливаем его
+                                if (ProviderFarm.CurProviderMon == null)
+                                {
+                                    if (RepositoryFarm.CurRepository.HashConnect)
+                                    {
+                                        // Установка текущего провайдера для мониторинга
+                                        ProviderFarm.SetCurrentProviderMon(RepositoryFarm.GetProvider(true), true);
+                                    }
+                                }
+                                else
+                                {
+                                    bool NewStatusPrvMon = ProviderFarm.CurProviderMon.TestConnect();
+                                    if (OldStatusPrvMon != NewStatusPrvMon)
+                                    {
+                                        Log.EventSave(String.Format("Произошло изменеие статуса подключения в текущем провайдере работы с мониторингом с {0} состояния в {1} состояние.", OldStatusPrvMon, NewStatusPrvMon), "ProgramStatus.ACreateCurentPulList", EventEn.Warning);
+                                    }
+                                    OldStatusPrvMon = NewStatusPrvMon;
+                                }
+                            }
+
+                            // Проверяем наличие подключения к провайдеру с объектами
+                            if (RepositoryFarm.CurRepository != null)
+                            {
+                                // Если объект не установлен то устанавливаем его
+                                if (ProviderFarm.CurProviderObj == null)
+                                {
+                                    if (RepositoryFarm.CurRepository.HashConnect)
+                                    {
+                                        // Установка текущего провайдера для базы с обьектами
+                                        ProviderFarm.SetCurrentProviderObj(RepositoryFarm.GetProvider(false), true);
+                                    }
+                                }
+                                else
+                                {
+                                    bool NewStatusPrvObj = ProviderFarm.CurProviderObj.TestConnect();
+                                    if (OldStatusPrvObj != NewStatusPrvObj)
+                                    {
+                                        Log.EventSave(String.Format("Произошло изменеие статуса подключения в текущем провайдере работы с объектами с {0} состояния в {1} состояние.", OldStatusPrvObj, NewStatusPrvObj), "ProgramStatus.ACreateCurentPulList", EventEn.Warning);
+                                    }
+                                    OldStatusPrvObj = NewStatusPrvObj;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ApplicationException ae = new ApplicationException(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message));
+                            Log.EventSave(ae.Message, "ProgramStatus.CreateCurentPulList", EventEn.Error);
                         }
                     }
 
@@ -200,7 +268,7 @@ namespace Common
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format(@"Ошибка при создании класса плагина:""{0}""", ex.Message));
-                Log.EventSave(ae.Message, "ProgramStatus.CreateCurentPulList", EventEn.Error);
+                Log.EventSave(ae.Message, "ProgramStatus.CreateCurentPulList", EventEn.FatalError);
                 throw ae;
             }
         }
@@ -227,7 +295,7 @@ namespace Common
             catch (Exception ex)
             {
             ApplicationException ae = new ApplicationException(string.Format("Упали при остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
-            Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+            Log.EventSave(ae.Message, "ProgramStatus.Stop", EventEn.Error);
             throw ae;
             }
         }
@@ -271,7 +339,7 @@ namespace Common
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при ожидании завершения процессов остановке мониторинга ноды с ошибкой: ({0})", ex.Message));
-                Log.EventSave(ae.Message, "ProgramStatus.StartCompileListing", EventEn.Error);
+                Log.EventSave(ae.Message, "ProgramStatus.Join", EventEn.Error);
                 throw ae;
             }
         }

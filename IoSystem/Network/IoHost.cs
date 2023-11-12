@@ -53,7 +53,7 @@ namespace IoSystem.Network
             try
             {
                 // Если репозиторий не виден то ничего не делаем нет смысла в управлении заданиями так как заданий поступить не может
-                if (RepositoryFarm.CurRepository == null) return EventEn.Message;
+                if (RepositoryFarm.CurRepository == null || !RepositoryFarm.CurRepository.HashConnect) return EventEn.Message;
 
                 // Получаем список заданий (с режимом мониторинг) с учётом параметров этой ноды для решения что с этим делать
                 RepositoryFarm.CurRepository.GetRepI.GetListinerTask(new IoTaskFilter(base.VersionPlg, base.PluginFullName, IoTaskProcessTypEn.Monitoring));
@@ -63,7 +63,7 @@ namespace IoSystem.Network
             catch (Exception ex)
             {
                 ApplicationException ae = new ApplicationException(string.Format("Упали при инициализации конструктора с ошибкой: ({0})", ex.Message));
-                this.EventSave(ae.Message, string.Format("{0}.IoMonLanList", this.GetType().FullName), EventEn.Error);
+                this.EventSave(ae.Message, string.Format("{0}.SetStatusPul", this.GetType().FullName), EventEn.Error);
                 //throw ae;
 
                 return EventEn.Error;

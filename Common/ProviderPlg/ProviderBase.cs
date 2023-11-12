@@ -110,7 +110,9 @@ namespace Common.ProviderPlg
         {
             try
             {
-                return TestConnect(this.ConnectionString, false);
+                HashConnect = TestConnect(this.ConnectionString, false);
+
+                return HashConnect;
             }
             catch (Exception ex)
             {

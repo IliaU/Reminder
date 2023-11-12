@@ -615,91 +615,95 @@ namespace RepositoryMsSql
             string SQL = "[io].[SelectConfig]";
             try
             {
-                // Проверка подключения
-                using (SqlConnection con = new SqlConnection(ConnectionString))
+                if (base.HashConnect)
                 {
-                    con.Open();
 
-                    using (SqlCommand com = new SqlCommand(SQL, con))
+                    // Проверка подключения
+                    using (SqlConnection con = new SqlConnection(ConnectionString))
                     {
-                        com.CommandTimeout = 900;  // 15 минут
-                        com.CommandType = CommandType.StoredProcedure;
-                        //
-                        //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
-                        //PIdOut.Direction = ParameterDirection.ReturnValue;
-                        //com.Parameters.Add(PIdOut);
-                        //
-                        //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
-                        //PId.Direction = ParameterDirection.Input;
-                        //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
-                        //com.Parameters.Add(PId);
-                        //
-                        SqlParameter PParamSpace = new SqlParameter("@ParamSpace", SqlDbType.VarChar, 300);
-                        PParamSpace.Direction = ParameterDirection.Input;
-                        PParamSpace.Value = "io";
-                        com.Parameters.Add(PParamSpace);
-                        //
-                        SqlParameter PParamGroup = new SqlParameter("@ParamGroup", SqlDbType.VarChar, 300);
-                        PParamGroup.Direction = ParameterDirection.Input;
-                        PParamGroup.Value = (Mon ? "ProviderMon" : "ProviderObj");
-                        com.Parameters.Add(PParamGroup);
-                        //
-                        SqlParameter PParamName = new SqlParameter("@ParamName", SqlDbType.VarChar, 300);
-                        PParamName.Direction = ParameterDirection.Input;
-                        PParamName.Value = "%";
-                        com.Parameters.Add(PParamName);
+                        con.Open();
 
-                        // Строим строку которую воткнём в дамп в случае падения
-                        SQL = GetStringPrintPar(com);
-
-                        // Запускаем процедуру                        
-                        using (SqlDataReader dr = com.ExecuteReader())
+                        using (SqlCommand com = new SqlCommand(SQL, con))
                         {
+                            com.CommandTimeout = 900;  // 15 минут
+                            com.CommandType = CommandType.StoredProcedure;
+                            //
+                            //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
+                            //PIdOut.Direction = ParameterDirection.ReturnValue;
+                            //com.Parameters.Add(PIdOut);
+                            //
+                            //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
+                            //PId.Direction = ParameterDirection.Input;
+                            //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
+                            //com.Parameters.Add(PId);
+                            //
+                            SqlParameter PParamSpace = new SqlParameter("@ParamSpace", SqlDbType.VarChar, 300);
+                            PParamSpace.Direction = ParameterDirection.Input;
+                            PParamSpace.Value = "io";
+                            com.Parameters.Add(PParamSpace);
+                            //
+                            SqlParameter PParamGroup = new SqlParameter("@ParamGroup", SqlDbType.VarChar, 300);
+                            PParamGroup.Direction = ParameterDirection.Input;
+                            PParamGroup.Value = (Mon ? "ProviderMon" : "ProviderObj");
+                            com.Parameters.Add(PParamGroup);
+                            //
+                            SqlParameter PParamName = new SqlParameter("@ParamName", SqlDbType.VarChar, 300);
+                            PParamName.Direction = ParameterDirection.Input;
+                            PParamName.Value = "%";
+                            com.Parameters.Add(PParamName);
 
-                            if (dr.HasRows)
+                            // Строим строку которую воткнём в дамп в случае падения
+                            SQL = GetStringPrintPar(com);
+
+                            // Запускаем процедуру                        
+                            using (SqlDataReader dr = com.ExecuteReader())
                             {
-                                string RPlugInType = null;
-                                string RConnectionString = null;
 
-                                // пробегаем по строкам
-                                while (dr.Read())
+                                if (dr.HasRows)
                                 {
-                                    string TmpParamName = null;
-                                    string TmpValStr0 = null;
+                                    string RPlugInType = null;
+                                    string RConnectionString = null;
 
-                                    // пробегаем по столбцам
-                                    for (int i = 0; i < dr.FieldCount; i++)
+                                    // пробегаем по строкам
+                                    while (dr.Read())
                                     {
-                                        if (dr.GetName(i) == "ValStr0") TmpValStr0 = dr.GetValue(i).ToString();
-                                        if (dr.GetName(i) == "ParamName") TmpParamName = dr.GetValue(i).ToString();
+                                        string TmpParamName = null;
+                                        string TmpValStr0 = null;
+
+                                        // пробегаем по столбцам
+                                        for (int i = 0; i < dr.FieldCount; i++)
+                                        {
+                                            if (dr.GetName(i) == "ValStr0") TmpValStr0 = dr.GetValue(i).ToString();
+                                            if (dr.GetName(i) == "ParamName") TmpParamName = dr.GetValue(i).ToString();
+                                        }
+
+                                        switch (TmpParamName)
+                                        {
+                                            case "PlugInType":
+                                                RPlugInType = TmpValStr0;
+                                                break;
+                                            case "ConnectionString":
+                                                RConnectionString = TmpValStr0;
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     }
 
-                                    switch (TmpParamName)
+                                    // Проверяем все необходимы параметры
+                                    if (!string.IsNullOrWhiteSpace(RPlugInType) && !string.IsNullOrWhiteSpace(RConnectionString))
                                     {
-                                        case "PlugInType":
-                                            RPlugInType = TmpValStr0;
-                                            break;
-                                        case "ConnectionString":
-                                            RConnectionString = TmpValStr0;
-                                            break;
-                                        default:
-                                            break;
+                                        rez = ProviderFarm.CreateNewProvider(RPlugInType, RConnectionString);
                                     }
-                                }
-
-                                // Проверяем все необходимы параметры
-                                if (!string.IsNullOrWhiteSpace(RPlugInType) && !string.IsNullOrWhiteSpace(RConnectionString))
-                                {
-                                    rez = ProviderFarm.CreateNewProvider(RPlugInType, RConnectionString);
                                 }
                             }
+
+                            // Получаем идентификатор товара
+                            //rez = int.Parse(PIdOut.Value.ToString());
                         }
 
-                        // Получаем идентификатор товара
-                        //rez = int.Parse(PIdOut.Value.ToString());
+                        con.Close();
                     }
-
-                    con.Close();
                 }
             }
             catch (SqlException ex)

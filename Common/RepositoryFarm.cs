@@ -296,14 +296,15 @@ namespace Common
             Provider rez = null;
             try
             {
-                if (CurRepository == null) throw new ApplicationException("Операцию выполнить не возможно. Не настроено подключение к репозиторию");
+                if (CurRepository == null || !CurRepository.HashConnect) throw new ApplicationException("Операцию выполнить не возможно. Не настроено подключение к репозиторию");
 
+                //if (CurRepository.HashConnect)
                 rez = ((RepositoryPlg.RepositoryI)CurRepository).SelectProvider(Mon);
             }
             catch (Exception ex)
             {
                 Log.EventSave(ex.Message, "RepositoryFarm.GetProvider", EventEn.Error);
-                throw ex;
+                //throw ex;
             }
 
             return rez;

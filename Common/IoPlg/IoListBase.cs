@@ -348,7 +348,7 @@ namespace Common.IoPlg
             {
                 try
                 {
-                    Log.EventSave(Message, string.Format("({0}).{1}", this.FolderName, this.PluginFullName), evn, IsLog, Show);
+                    Log.EventSave(Message, string.Format("({0}).{1}", this.FolderName, Source), evn, IsLog, Show);
                 }
                 catch (Exception ex)
                 {
@@ -422,18 +422,32 @@ namespace Common.IoPlg
                     {
                         if (CountWhile == 0)
                         {
-                            // Устанавливаем тайм аут из конфига
-                            CountWhile = Config.SecondPulRefreshStatus;
-
-                            // Передаём управление нашему кастомному пулу чтобы он мог сохранить свою часть статусов в своей ему известной логике
-                            // И получаем результат получилось ли сохранить или возникла ошибка
-                            EventEn LastStatus = IoListI.SetStatusPul();
-
-                            // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
-                            if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                            try
                             {
-                                // Фиксируем версию нашего приложения и его статус
-                                ((RepositoryI)RepositoryFarm.CurRepository).PulBasicSetStatus(Environment.MachineName, this.PluginFullName, DateTime.Now, this.VersionPlg, LastStatus.ToString());
+                                // Устанавливаем тайм аут из конфига
+                                CountWhile = Config.SecondPulRefreshStatus;
+
+                                // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
+                                if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
+                                {
+                                    // Передаём управление нашему кастомному пулу чтобы он мог сохранить свою часть статусов в своей ему известной логике
+                                    // И получаем результат получилось ли сохранить или возникла ошибка
+                                    EventEn LastStatus = IoListI.SetStatusPul();
+
+                                    // Фиксируем версию нашего приложения и его статус
+                                    ((RepositoryI)RepositoryFarm.CurRepository).PulBasicSetStatus(Environment.MachineName, this.PluginFullName, DateTime.Now, this.VersionPlg, LastStatus.ToString());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                ApplicationException ae = new ApplicationException(string.Format("Упали при запуске асинхронного процесса: ({0})", ex.Message));
+                                Log.EventSave(ae.Message, string.Format("{0}.AStartCompileListing", this.GetType().FullName), EventEn.Error);
+
+                                try
+                                {
+                                    if (RepositoryFarm.CurRepository != null) RepositoryFarm.CurRepository.TestConnect();
+                                }
+                                catch (Exception){}
                             }
                         }
 
@@ -444,7 +458,7 @@ namespace Common.IoPlg
                 catch (Exception ex)
                 {
                     ApplicationException ae = new ApplicationException(string.Format("Упали при запуске асинхронного процесса: ({0})", ex.Message));
-                    Log.EventSave(ae.Message, string.Format("{0}.StartCompileListing", this.GetType().FullName), EventEn.Error);
+                    Log.EventSave(ae.Message, string.Format("{0}.AStartCompileListing", this.GetType().FullName), EventEn.FatalError);
                     throw ae;
                 }
                 finally
