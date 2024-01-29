@@ -38,6 +38,9 @@ namespace Common
         }
 
 
-
+        /// <summary>
+        /// Вложенный список
+        /// </summary>
+        public ParamList LstParam;
     }
 }

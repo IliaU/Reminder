@@ -727,11 +727,11 @@ namespace RepositoryMsSql
         /// <summary>
         /// Получение актуального задания на основе фильтра который относится к текущей ноде
         /// </summary>
-        /// <param name="DraftTask"></param>
-        /// <returns></returns>
-        public IoTask GetListinerTask(IoTaskFilter DraftTask)
+        /// <param name="DraftTask">Шаблон заданий который мы собираемся искать</param>
+        /// <returns>Возвращаем лист доступныхзаданий для заданий с типом мониторинг</returns>
+        public List<IoTask> GetListinerTask(IoTaskFilter DraftTask)
         {
-            IoTask rez=null;
+            List <IoTask> rez = null;
 
             string SQL = "[io].[TaskSelect]";
             try
@@ -799,7 +799,21 @@ namespace RepositoryMsSql
                         SQL = GetStringPrintPar(com);
 
                         // Запускаем процедуру
-                        com.ExecuteNonQuery();
+                        using (SqlDataReader dr = com.ExecuteReader())
+                        {
+                            // Есть строки
+                            if (dr.HasRows)
+                            {
+                                rez = new List<IoTask>();
+
+                                // пробегаем по строкам
+                                while (dr.Read())
+                                {
+                                    //rez.Add(dr.GetValue(0).ToString());
+                                }
+                            }
+                        }
+
 
                         // Получаем идентификатор товара
                         //rez = int.Parse(PIdOut.Value.ToString());
@@ -808,6 +822,159 @@ namespace RepositoryMsSql
                     con.Close();
                 }
                 
+            }
+            catch (SqlException ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при чтении задания из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.GetListinerTask", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при чтении задания из репозитория:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.GetListinerTask", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
+
+            return rez;
+        }
+
+
+        /// <summary>
+        /// Получение списка параметров
+        /// </summary>
+        /// <param name="DraftTask">Шаблон класса для которого хотим получить список параметров</param>
+        /// <returns>Возвращаем класс со всеми нашими параметрами</returns>
+        public ParamList GetParams(IoTaskFilter DraftTask)
+        {
+            ParamList rez = null;
+
+            string SQL = "[io].[ParamSelect]";
+            try
+            {
+                // Проверка подключения
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+
+                    using (SqlCommand com = new SqlCommand(SQL, con))
+                    {
+                        com.CommandTimeout = 900;  // 15 минут
+                        com.CommandType = CommandType.StoredProcedure;
+                        //
+                        //SqlParameter PIdOut = new SqlParameter("@IdOut", SqlDbType.Int);
+                        //PIdOut.Direction = ParameterDirection.ReturnValue;
+                        //com.Parameters.Add(PIdOut);
+                        //
+                        //SqlParameter PId = new SqlParameter("@Id", SqlDbType.Int);
+                        //PId.Direction = ParameterDirection.Input;
+                        //if (nTInstance.ID != null) PId.Value = (int)nTInstance.ID;
+                        //com.Parameters.Add(PId);
+                        //
+                        SqlParameter PPluginClass = new SqlParameter("@PluginClass", SqlDbType.VarChar, 300);
+                        PPluginClass.Direction = ParameterDirection.Input;
+                        PPluginClass.Value = DraftTask.PluginClass;
+                        com.Parameters.Add(PPluginClass);
+
+                        // Строим строку которую воткнём в дамп в случае падения
+                        SQL = GetStringPrintPar(com);
+
+                        // Запускаем процедуру
+                        using (SqlDataReader dr = com.ExecuteReader())
+                        {
+                            // Есть строки
+                            if (dr.HasRows)
+                            {
+                                rez = new ParamList();
+
+
+                                // пробегаем по строкам
+                                while (dr.Read())
+                                {
+                                    ParamList Pio = new ParamList();
+                                    ParamList PPulBasicStatus = new ParamList();
+
+                                    string TmpParamSpace = null;
+                                    string TmpParamGroup = null;
+                                    string TmpParamName = null;
+                                    //
+                                    string TmpValStr0 = null;
+                                    float? TmpValFloat0 = null;
+                                    int? TmpValInt0 = null;
+                                    Int64? TmpValBigInt0 = null;
+                                    Boolean? TmpValBit0 = null;
+                                    DateTime? TmpDate0 = null;
+                                    DateTime? TmpDateTime0 = null;
+
+                                    // пробегаем по столбцам
+                                    for (int i = 0; i < dr.FieldCount; i++)
+                                    {
+                                        if (dr.GetName(i) == "ParamSpace" && !dr.IsDBNull(i)) TmpParamSpace = dr.GetValue(i).ToString();
+                                        if (dr.GetName(i) == "ParamGroup" && !dr.IsDBNull(i)) TmpParamGroup = dr.GetValue(i).ToString();
+                                        if (dr.GetName(i) == "ParamName" && !dr.IsDBNull(i)) TmpParamName = dr.GetValue(i).ToString();
+                                        //
+                                        if (dr.GetName(i) == "ValStr0" && !dr.IsDBNull(i)) TmpValStr0 = dr.GetValue(i).ToString();
+                                        if (dr.GetName(i) == "ValFloat0" && !dr.IsDBNull(i)) TmpValFloat0 = float.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "ValInt0" && !dr.IsDBNull(i)) TmpValInt0 = int.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "ValBigInt0" && !dr.IsDBNull(i)) TmpValBigInt0 = Int64.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "ValBit0" && !dr.IsDBNull(i)) TmpValBit0 = Boolean.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "Date0" && !dr.IsDBNull(i)) TmpDate0 = DateTime.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "DateTime0" && !dr.IsDBNull(i)) TmpDateTime0 = DateTime.Parse(dr.GetValue(i).ToString());
+                                    }
+
+                                    Param tmp = null;
+                                    switch (TmpParamSpace)
+                                    {
+                                        case "io":
+                                            tmp = null;
+                                            if (Pio.ParamListChildrens!=null) tmp = Pio.ParamListChildrens[TmpParamGroup];
+                                            if (tmp==null)
+                                            {
+                                                if (!string.IsNullOrWhiteSpace(TmpValStr0))
+                                                {
+                                                    Param nPar = ParamFarm.CreateNewParam("IoSystem.IoString");
+                                                    nPar.ParamName = TmpParamName;
+
+                                                    Pio.Add(nPar); 
+                                                }
+                                            }
+                                            break;
+                                        case "PulBasicStatus":
+                                            tmp = null;
+                                            if (PPulBasicStatus.ParamListChildrens != null) tmp = PPulBasicStatus.ParamListChildrens[TmpParamGroup];
+                                            if (tmp == null)
+                                            {
+                                                if (!string.IsNullOrWhiteSpace(TmpValStr0))
+                                                {
+                                                    Param nPar = ParamFarm.CreateNewParam("IoSystem.IoString");
+                                                    nPar.ParamName = TmpParamName;
+
+                                                    PPulBasicStatus.Add(nPar);
+                                                }
+                                            }
+                                            break;
+                                        default:
+                                            if (TmpParamSpace == DraftTask.PluginClass)
+                                            {
+
+                                            }
+                                            break;
+                                    }
+
+                                }
+                            }
+                        }
+
+
+                        // Получаем идентификатор товара
+                        //rez = int.Parse(PIdOut.Value.ToString());
+                    }
+
+                    con.Close();
+                }
+
             }
             catch (SqlException ex)
             {
@@ -888,6 +1055,8 @@ namespace RepositoryMsSql
             }
             return rez;
         }
+
+
 
         #endregion
     }

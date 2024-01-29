@@ -47,16 +47,16 @@ namespace IoSystem.Network
         /// <summary>
         /// Событие установки статуса пула для отслеживания зависаний и качества соединения с разными источниками относительно нод
         /// </summary>
+        /// <param name="CurTaskMonitoring">Задачи предназначенные для нашего пула которые необходимо будет выполнять в режиме мониторинг</param>
         /// <returns>Возвращаем статус проверки</returns>
-        public EventEn SetStatusPul()
+        public EventEn SetStatusPul(List<IoTask> CurTaskMonitoring)
         {
             try
             {
                 // Если репозиторий не виден то ничего не делаем нет смысла в управлении заданиями так как заданий поступить не может
                 if (RepositoryFarm.CurRepository == null || !RepositoryFarm.CurRepository.HashConnect) return EventEn.Message;
 
-                // Получаем список заданий (с режимом мониторинг) с учётом параметров этой ноды для решения что с этим делать
-                RepositoryFarm.CurRepository.GetRepI.GetListinerTask(new IoTaskFilter(base.VersionPlg, base.PluginFullName, IoTaskProcessTypEn.Monitoring));
+                
 
                 return EventEn.Message;
             }

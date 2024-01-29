@@ -1,6 +1,6 @@
 USE [Reminder]
 GO
-/****** Object:  StoredProcedure [io].[NodeSetStatus]    Script Date: 04.10.2023 22:05:48 ******/
+/****** Object:  StoredProcedure [io].[TaskSelect]    Script Date: 09.12.2023 22:22:26 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -80,7 +80,8 @@ BEGIN
 					Select [PluginClass], [ObjParamListId], [ObjInParamListId], [PluginClassMethod], [StartTimeOutSec], [Segment], [TaskProcessTyp],
 						[ErrorRetryCount], [ErrorRetryTimeOutSec], [ReflexionTimeOutSec], [Prioritet], [GuidTask] into #TmpTaskSelect
 					From T
-					Where [Prioritet]=[PMin]
+					-- если мы запущены в режиме мониторинга то выполняем без ограничения количества строк для того чтобы система могла получить все строки а не одну
+					Where [Prioritet]=case When @TaskProcessTyp='Monitoring' then [Prioritet] else [PMin] end  
 			
 					-- Если вызов не с типом мониторинг то нужно сделать обновления пополям которые не пустые для того чтобы повторно не выполнялось задание на других нодах но делать мы должны по объектно чтобы один сервер начал обрабатывать один объект
 					if (@TaskProcessTyp<>'Monitoring')

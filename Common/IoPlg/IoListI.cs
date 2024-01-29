@@ -14,7 +14,9 @@ namespace Common.IoPlg
         /// <summary>
         /// Событие установки статуса пула для отслеживания зависаний и качества соединения с разными источниками относительно нод
         /// </summary>
+        /// <param name="CurTaskMonitoring">Задачи предназначенные для нашего пула которые необходимо будет выполнять в режиме мониторинг</param>
         /// <returns>Возвращаем статус проверки</returns>
-        EventEn SetStatusPul();
+        EventEn SetStatusPul(List<IoTask> CurTaskMonitoring);
     }
 }
+

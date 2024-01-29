@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Threading;
 using Common.RepositoryPlg;
+using Common;
 
 namespace Common.IoPlg
 {
@@ -103,6 +104,11 @@ namespace Common.IoPlg
             /// Информация по классу
             /// </summary>
             public PluginClassElement ElementDll;
+
+            /// <summary>
+            /// Список параметров для нашего приложения
+            /// </summary>
+            public ParamList CurParams = new ParamList();
 
             #endregion
 
@@ -426,13 +432,22 @@ namespace Common.IoPlg
                             {
                                 // Устанавливаем тайм аут из конфига
                                 CountWhile = Config.SecondPulRefreshStatus;
-
+                                
                                 // Если появилось подключение к базе данных и ещё небыло успешной регистрации нашего пула то делаем её в системе для того чтобы сервис знал о том что сервис такой существует 
                                 if (RepositoryFarm.CurRepository != null && RepositoryFarm.CurRepository.HashConnect)
                                 {
+                                    // Строим шаблон по которому потом в базу будем залезать
+                                    IoTaskFilter CurTaskFilter = new IoTaskFilter(VersionPlg, PluginFullName, IoTaskProcessTypEn.Monitoring);
+
+                                    // Получаем список параметров
+                                    CurParams = RepositoryFarm.CurRepository.GetRepI.GetParams(CurTaskFilter);
+
+                                    // Получаем список заданий (с режимом мониторинг) с учётом параметров этой ноды для решения что с этим делать
+                                    List <IoTask> CurTaskMonitoring = RepositoryFarm.CurRepository.GetRepI.GetListinerTask(CurTaskFilter);
+
                                     // Передаём управление нашему кастомному пулу чтобы он мог сохранить свою часть статусов в своей ему известной логике
                                     // И получаем результат получилось ли сохранить или возникла ошибка
-                                    EventEn LastStatus = IoListI.SetStatusPul();
+                                    EventEn LastStatus = IoListI.SetStatusPul(CurTaskMonitoring);
 
                                     // Фиксируем версию нашего приложения и его статус
                                     ((RepositoryI)RepositoryFarm.CurRepository).PulBasicSetStatus(Environment.MachineName, this.PluginFullName, DateTime.Now, this.VersionPlg, LastStatus.ToString());

@@ -120,6 +120,41 @@ namespace Common.ParamPlg
                 private set { }
             }
 
+            /// <summary>
+            /// Индексатор для поиска объекта по его индексу
+            /// </summary>
+            /// <param name="ParamName">Имя параметра</param>
+            /// <returns>Возвращаем найденый объект</returns>
+            public Param this[string ParamName]
+            {
+                get
+                {
+                    Param rez = null;
+                    try
+                    {
+                        lock (this.ParamL)
+                        {
+                            foreach (Param item in this.ParamL)
+                            {
+                                if (item.ParamName == ParamName)
+                                {
+                                    rez = item;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationException ae = new ApplicationException(string.Format(@"Ошибка в индексаторе Io this[int index]:""{0}""", ex.Message));
+                        Log.EventSave(ae.Message, string.Format("{0}.Param[int]", this.GetType().FullName), EventEn.Error);
+                        throw ae;
+                    }
+                    return rez;
+                }
+                private set { }
+            }
+
             #endregion
 
             #region Method (public)

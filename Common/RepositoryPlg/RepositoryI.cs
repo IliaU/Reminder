@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Common;
+
 namespace Common.RepositoryPlg
 {
     /// <summary>
@@ -47,8 +49,15 @@ namespace Common.RepositoryPlg
         /// <summary>
         /// Получение актуального задания на основе фильтра который относится к текущей ноде
         /// </summary>
-        /// <param name="DraftTask"></param>
-        /// <returns></returns>
-        IoTask GetListinerTask(IoTaskFilter DraftTask);
+        /// <param name="DraftTask">Шаблон класса заданий который мы собираемся искать</param>
+        /// <returns>Возвращаем лист доступныхзаданий для заданий с типом мониторинг</returns>
+        List<IoTask> GetListinerTask(IoTaskFilter DraftTask);
+
+        /// <summary>
+        /// Получение списка параметров
+        /// </summary>
+        /// <param name="DraftTask">Шаблон класса для которого хотим получить список параметров</param>
+        /// <returns>Возвращаем класс со всеми нашими параметрами</returns>
+        ParamList GetParams(IoTaskFilter DraftTask);
     }
 }

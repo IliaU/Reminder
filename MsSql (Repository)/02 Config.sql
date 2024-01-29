@@ -38,10 +38,10 @@ Where not exists
 	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'io' and [ParamGroup] = 'Global' and [ParamName] = 'Trace');
 
 
-insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValStr0])
-Select 'PulBasicStatus', 'IoSystem.Network.IoHost', 'TaskProcessTyp', 'Monitoring'
+insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValInt0])
+Select 'PulBasicStatus', 'IoSystem.Network.IoHost', 'TaskRepiatTypMonitoringMin', 5
 Where not exists 
-	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'PulBasicStatus' and [ParamGroup] = 'IoSystem.Network.IoHost' and [ParamName] = 'TaskProcessTyp');
+	(Select [ValBit0] From [io].[Config] Where [ParamSpace] = 'PulBasicStatus' and [ParamGroup] = 'IoSystem.Network.IoHost' and [ParamName] = 'TaskRepiatTypMonitoringMin');
 
 insert into [io].[Config]([ParamSpace], [ParamGroup], [ParamName], [ValUniquei0])
 Select 'PulBasicStatus', 'IoSystem.Network.IoHost', 'GlobalObjId', NEWID()
