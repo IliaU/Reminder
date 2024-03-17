@@ -780,7 +780,7 @@ namespace RepositoryMsSql
                         PStatusLoockMachine.Value = DraftTask.StatusLoockMachine;
                         com.Parameters.Add(PStatusLoockMachine);
                         //
-                        SqlParameter PClassVersion = new SqlParameter("@ClassVersion", SqlDbType.Int);
+                        SqlParameter PClassVersion = new SqlParameter("@ClassVersion", SqlDbType.BigInt);
                         PClassVersion.Direction = ParameterDirection.Input;
                         PClassVersion.Value = DraftTask.ClassVersion;
                         com.Parameters.Add(PClassVersion);
@@ -888,14 +888,11 @@ namespace RepositoryMsSql
                             if (dr.HasRows)
                             {
                                 rez = new ParamList();
-
+                                ParamList PPulBasicStatus = new ParamList();
 
                                 // пробегаем по строкам
                                 while (dr.Read())
                                 {
-                                    ParamList Pio = new ParamList();
-                                    ParamList PPulBasicStatus = new ParamList();
-
                                     string TmpParamSpace = null;
                                     string TmpParamGroup = null;
                                     string TmpParamName = null;
@@ -907,6 +904,7 @@ namespace RepositoryMsSql
                                     Boolean? TmpValBit0 = null;
                                     DateTime? TmpDate0 = null;
                                     DateTime? TmpDateTime0 = null;
+                                    Guid? TmpUniquei0 = null;
 
                                     // пробегаем по столбцам
                                     for (int i = 0; i < dr.FieldCount; i++)
@@ -920,38 +918,161 @@ namespace RepositoryMsSql
                                         if (dr.GetName(i) == "ValInt0" && !dr.IsDBNull(i)) TmpValInt0 = int.Parse(dr.GetValue(i).ToString());
                                         if (dr.GetName(i) == "ValBigInt0" && !dr.IsDBNull(i)) TmpValBigInt0 = Int64.Parse(dr.GetValue(i).ToString());
                                         if (dr.GetName(i) == "ValBit0" && !dr.IsDBNull(i)) TmpValBit0 = Boolean.Parse(dr.GetValue(i).ToString());
-                                        if (dr.GetName(i) == "Date0" && !dr.IsDBNull(i)) TmpDate0 = DateTime.Parse(dr.GetValue(i).ToString());
-                                        if (dr.GetName(i) == "DateTime0" && !dr.IsDBNull(i)) TmpDateTime0 = DateTime.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "ValDate0" && !dr.IsDBNull(i)) TmpDate0 = DateTime.Parse(dr.GetValue(i).ToString()).Date;
+                                        if (dr.GetName(i) == "ValDateTime0" && !dr.IsDBNull(i)) TmpDateTime0 = DateTime.Parse(dr.GetValue(i).ToString());
+                                        if (dr.GetName(i) == "ValUniquei0" && !dr.IsDBNull(i)) TmpUniquei0 = Guid.Parse(dr.GetValue(i).ToString());
                                     }
 
-                                    Param tmp = null;
+                                    List<Param> tmp = new List<Param>();
                                     switch (TmpParamSpace)
                                     {
                                         case "io":
-                                            tmp = null;
-                                            if (Pio.ParamListChildrens!=null) tmp = Pio.ParamListChildrens[TmpParamGroup];
-                                            if (tmp==null)
+                                            // Получаем глобальный параметр
+                                            if (TmpParamGroup == "Global")
                                             {
-                                                if (!string.IsNullOrWhiteSpace(TmpValStr0))
-                                                {
-                                                    Param nPar = ParamFarm.CreateNewParam("IoSystem.IoString");
-                                                    nPar.ParamName = TmpParamName;
+                                                // Задаём имя глобалного листа с параметрами
+                                                if (string.IsNullOrWhiteSpace(rez.ParamGroupName)) rez.ParamGroupName = TmpParamGroup;
 
-                                                    Pio.Add(nPar); 
+                                                // Пробегаем по плагинам с классами параметров
+                                                foreach (PluginClassElementList iParFile in ParamFarm.GetListParamName())
+                                                {
+                                                    if (iParFile.PluginFileName== "IoSystem.dll")
+                                                    {
+                                                        // Пробегаем по самим класса параметров
+                                                        foreach (PluginClassElement iParClas in iParFile.Items)
+                                                        {
+                                                            if (TmpValStr0 != null && iParClas.Name == "IoString")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpValStr0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpValFloat0 != null && iParClas.Name == "IoFloat")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpValFloat0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpValInt0 != null && iParClas.Name == "IoInt")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpValInt0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpValBigInt0 != null && iParClas.Name == "IoBigInt")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpValBigInt0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpValBit0 != null && iParClas.Name == "IoBit")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpValBit0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpDate0 != null && iParClas.Name == "IoDate")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpDate0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpDateTime0 != null && iParClas.Name == "IoDateTime")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpDateTime0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                            if (TmpUniquei0 != null && iParClas.Name == "IoUniquei")
+                                                            {
+                                                                Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                                ntmp.ParamName = TmpParamName;
+                                                                ntmp.SetParam(TmpUniquei0);
+                                                                rez.Add(ntmp);
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
+
                                             break;
                                         case "PulBasicStatus":
-                                            tmp = null;
-                                            if (PPulBasicStatus.ParamListChildrens != null) tmp = PPulBasicStatus.ParamListChildrens[TmpParamGroup];
-                                            if (tmp == null)
-                                            {
-                                                if (!string.IsNullOrWhiteSpace(TmpValStr0))
-                                                {
-                                                    Param nPar = ParamFarm.CreateNewParam("IoSystem.IoString");
-                                                    nPar.ParamName = TmpParamName;
 
-                                                    PPulBasicStatus.Add(nPar);
+                                            // Задаём имя глобалного листа с параметрами
+                                            if (string.IsNullOrWhiteSpace(PPulBasicStatus.ParamGroupName)) PPulBasicStatus.ParamGroupName = TmpParamGroup;
+
+                                            // Пробегаем по плагинам с классами параметров
+                                            foreach (PluginClassElementList iParFile in ParamFarm.GetListParamName())
+                                            {
+                                                if (iParFile.PluginFileName == "IoSystem.dll")
+                                                {
+                                                    // Пробегаем по самим класса параметров
+                                                    foreach (PluginClassElement iParClas in iParFile.Items)
+                                                    {
+                                                        if (TmpValStr0 != null && iParClas.Name == "IoString")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpValStr0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpValFloat0 != null && iParClas.Name == "IoFloat")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpValFloat0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpValInt0 != null && iParClas.Name == "IoInt")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpValInt0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpValBigInt0 != null && iParClas.Name == "IoBigInt")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpValBigInt0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpValBit0 != null && iParClas.Name == "IoBit")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpValBit0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpDate0 != null && iParClas.Name == "IoDate")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpDate0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpDateTime0 != null && iParClas.Name == "IoDateTime")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpDateTime0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                        if (TmpUniquei0 != null && iParClas.Name == "IoUniquei")
+                                                        {
+                                                            Param ntmp = ParamFarm.CreateNewParam(string.Format("{0}.{1}", iParFile.PluginFileName.Replace(".dll", ""), iParClas.Name));
+                                                            ntmp.ParamName = TmpParamName;
+                                                            ntmp.SetParam(TmpUniquei0);
+                                                            PPulBasicStatus.Add(ntmp);
+                                                        }
+                                                    }
                                                 }
                                             }
                                             break;
@@ -962,11 +1083,13 @@ namespace RepositoryMsSql
                                             }
                                             break;
                                     }
-
                                 }
+
+                                rez.ParamListChildrens = PPulBasicStatus;
                             }
                         }
 
+                       
 
                         // Получаем идентификатор товара
                         //rez = int.Parse(PIdOut.Value.ToString());

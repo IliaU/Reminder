@@ -19,7 +19,7 @@ CREATE TABLE [io].[Task](
 	[HostName] [varchar](100) NULL,
 	[UserName] [varchar](100) NULL,
 	[StatusLoockMachine] [bit] NULL,
-	[ClassVersion] [int] NOT NULL default (0),
+	[ClassVersion] [bigint] NOT NULL default (0),
 	[StartTimeOutSec] [int] NOT NULL default (15), 
 	[Segment] [varchar](1) NULL,
 	[TaskProcessTyp] [varchar](50) NULL,

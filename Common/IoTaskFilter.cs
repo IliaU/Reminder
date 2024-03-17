@@ -39,7 +39,7 @@ namespace Common
         /// <summary>
         /// Минимальная версия ноды меньше ктоорой нельзя брать задания
         /// </summary>
-        public int ClassVersion { get; private set; } = 0;
+        public Int64 ClassVersion { get; private set; } = 0;
 
         /// <summary>
         /// Класс плагина для которого предназначается это задание. (аналог метода который вызывается в классе)

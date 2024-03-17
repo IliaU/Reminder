@@ -19,6 +19,7 @@ CREATE TABLE [io].[Config]
 	[ValBigInt0] [bigint] NULL,
 	[ValBit0] [bit] NULL,
 	[ValDate0] [date] NULL,
+	[ValDateTime0] [datetime] NULL,
 	[ValUniquei0] [uniqueidentifier] NULL,
  CONSTRAINT [PK_Config] PRIMARY KEY CLUSTERED 
  (

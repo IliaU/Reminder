@@ -44,7 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IoBigInt.cs" />
+    <Compile Include="IoBit.cs" />
+    <Compile Include="IoDate.cs" />
+    <Compile Include="IoDateTime.cs" />
+    <Compile Include="IoFloat.cs" />
+    <Compile Include="IoInt.cs" />
     <Compile Include="IoString.cs" />
+    <Compile Include="IoUniquei.cs" />
     <Compile Include="Network\IoHostGetNetwork.cs" />
     <Compile Include="Network\IoHost.cs" />
     <Compile Include="Network\FIoHostSetup.cs">

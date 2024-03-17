@@ -108,7 +108,7 @@ namespace Common.IoPlg
             /// <summary>
             /// Список параметров для нашего приложения
             /// </summary>
-            public ParamList CurParams = new ParamList();
+            public ParamList CurStaticParams = new ParamList();
 
             #endregion
 
@@ -439,11 +439,11 @@ namespace Common.IoPlg
                                     // Строим шаблон по которому потом в базу будем залезать
                                     IoTaskFilter CurTaskFilter = new IoTaskFilter(VersionPlg, PluginFullName, IoTaskProcessTypEn.Monitoring);
 
-                                    // Получаем список параметров
-                                    CurParams = RepositoryFarm.CurRepository.GetRepI.GetParams(CurTaskFilter);
+                                    // Получаем список параметров (глобальных и static на уровне приложения)
+                                    CurStaticParams = RepositoryFarm.CurRepository.GetRepI.GetParams(CurTaskFilter);
 
                                     // Получаем список заданий (с режимом мониторинг) с учётом параметров этой ноды для решения что с этим делать
-                                    List <IoTask> CurTaskMonitoring = RepositoryFarm.CurRepository.GetRepI.GetListinerTask(CurTaskFilter);
+                                    List<IoTask> CurTaskMonitoring = RepositoryFarm.CurRepository.GetRepI.GetListinerTask(CurTaskFilter);
 
                                     // Передаём управление нашему кастомному пулу чтобы он мог сохранить свою часть статусов в своей ему известной логике
                                     // И получаем результат получилось ли сохранить или возникла ошибка

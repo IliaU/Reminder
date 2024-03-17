@@ -37,6 +37,43 @@ namespace Common
             }
         }
 
+        /// <summary>
+        /// Присвоение параметру значения
+        /// </summary>
+        /// <param name="par">Значение которое надо присвоить</param>
+        public virtual void SetParam(object par)
+        {
+            try
+            {
+                throw new ApplicationException("Метод не реализован в классе наследника.");
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при сохранении параметра:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.SetParam", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
+        }
+
+        /// <summary>
+        /// Получение параметра
+        /// </summary>
+        /// <returns>Возвращаем объект представляющий наш параметр</returns>
+        public virtual object GetParam()
+        {
+            try
+            {
+                throw new ApplicationException("Метод не реализован в классе наследника.");
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку если её должен видеть пользователь или если взведён флаг трассировке в файле настройки программы
+                ApplicationException xe = new ApplicationException(string.Format(@"Ошибка при чтении параметра:""{0}""", ex.Message));
+                if (Config.Trace) base.EventSave(xe.Message, string.Format("{0}.GetParam", this.GetType().FullName), EventEn.Error, true, false);
+                throw xe;
+            }
+        }
 
         /// <summary>
         /// Вложенный список

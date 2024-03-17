@@ -19,6 +19,11 @@ namespace Common
         public Guid? ObjParamListId;
 
         /// <summary>
+        /// Имя группы параметров
+        /// </summary>
+        public string ParamGroupName;
+
+        /// <summary>
         /// Значение параметра которое может быть кастомным созданное в плагине пользователя
         /// </summary>
         public Param ParamValue;
